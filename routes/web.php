@@ -1,5 +1,35 @@
 <?php
 
+
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
+// Redirect to provider
+Route::get('/auth/{provider}', function ($provider) {
+    return Socialite::driver($provider)->redirect();
+});
+
+// Handle provider callback
+Route::get('/auth/{provider}/callback', function ($provider) {
+    $socialUser = Socialite::driver($provider)->user();
+
+    // Check if user exists, otherwise create new one
+    $user = User::updateOrCreate([
+        'email' => $socialUser->getEmail(),
+    ], [
+        'name' => $socialUser->getName(),
+        'password' => bcrypt(uniqid()), // Set a random password
+        'provider' => $provider,
+        'provider_id' => $socialUser->getId(),
+    ]);
+
+    Auth::login($user);
+
+    return redirect('/dashboard');
+});
+
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +45,9 @@ use Inertia\Inertia;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
