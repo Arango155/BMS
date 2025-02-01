@@ -39,7 +39,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email address" />
 
                 <TextInput
                     id="email"
@@ -91,7 +91,7 @@ const submit = () => {
             </div>
         </form>
 
-        <!-- Social Login Buttons -->
+        <!-- Social login buttons -->
         <div class="mt-6 flex flex-col space-y-3">
             <a href="/auth/google" class="w-full flex items-center justify-center px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg text-center">
                 <i class="fab fa-google mr-2"></i> Google
@@ -102,6 +102,56 @@ const submit = () => {
             <a href="/auth/github" class="w-full flex items-center justify-center px-4 py-2 text-white bg-gray-800 hover:bg-gray-900 rounded-lg text-center">
                 <i class="fab fa-github mr-2"></i> GitHub
             </a>
+            <a href="/auth/linkedin" class="w-full flex items-center justify-center px-4 py-2 text-white bg-blue-700 hover:bg-blue-800 rounded-lg text-center">
+                <i class="fab fa-linkedin mr-2"></i> LinkedIn
+            </a>
+            <a href="/auth/microsoft" class="w-full flex items-center justify-center px-4 py-2 text-white bg-gray-700 hover:bg-gray-800 rounded-lg text-center">
+                <i class="fab fa-microsoft mr-2"></i> Microsoft
+            </a>
+            <a href="/auth/apple" class="w-full flex items-center justify-center px-4 py-2 text-white bg-black hover:bg-gray-900 rounded-lg text-center">
+                <i class="fab fa-apple mr-2"></i> Apple
+            </a>
+
+            <hr>
+
+            <!-- Redirect to registration page -->
+            <div class="flex justify-between">
+                <Link href="/auth/register" class="text-blue-600 hover:text-blue-700">
+                    Create an account
+                </Link>
+                <Link href="/auth/password/reset" class="text-blue-600 hover:text-blue-700">
+                    Forgot your password?
+                </Link>
+            </div>
+
+            <!-- Additional information -->
+            <div class="mt-4 text-sm text-gray-600 text-center">
+                Account for BMS
+                <br>
+                <Link href="/privacy-policy" class="text-blue-600 hover:text-blue-700">
+                    Privacy Policy
+                </Link>
+                •
+                <Link href="/user-notice" class="text-blue-600 hover:text-blue-700">
+                    User Notice
+                </Link>
+            </div>
+
+            <div class="mt-2 text-xs text-gray-500 text-center">
+                This site is protected by reCAPTCHA and the
+                <Link href="https://policies.google.com/privacy" class="text-blue-600 hover:text-blue-700">
+                    Privacy Policy
+                </Link>
+                and the
+                <Link href="https://policies.google.com/terms" class="text-blue-600 hover:text-blue-700">
+                    Terms of Service
+                </Link>
+                of Google apply.
+            </div>
         </div>
+        <br>
+        <br>
     </GuestLayout>
+    <br>
+    <br>
 </template>

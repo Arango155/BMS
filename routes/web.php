@@ -5,6 +5,13 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+//Language
+Route::get('/', function () {
+    App::setLocale(App::getLocale());
+    return view('welcome');
+});
+
+
 // Redirect to provider
 Route::get('/auth/{provider}', function ($provider) {
     return Socialite::driver($provider)->redirect();
