@@ -5,6 +5,8 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
+
+
 //Language
 Route::get('/', function () {
     App::setLocale(App::getLocale());

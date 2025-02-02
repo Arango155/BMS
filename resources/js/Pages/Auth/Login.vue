@@ -116,9 +116,10 @@ const submit = () => {
 
             <!-- Redirect to registration page -->
             <div class="flex justify-between">
-                <Link href="/auth/register" class="text-blue-600 hover:text-blue-700">
+                <Link :href="route('register')" class="text-blue-600 hover:text-blue-700">
                     Create an account
                 </Link>
+
                 <Link href="/auth/password/reset" class="text-blue-600 hover:text-blue-700">
                     Forgot your password?
                 </Link>
@@ -152,6 +153,11 @@ const submit = () => {
         <br>
         <br>
     </GuestLayout>
-    <br>
-    <br>
+
 </template>
+
+<style scoped>
+body {
+    padding: 5%;
+}
+</style>

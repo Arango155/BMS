@@ -149,4 +149,5 @@ const showingNavigationDropdown = ref(false);
             </main>
         </div>
     </div>
+    <Footer />
 </template>
