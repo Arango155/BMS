@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import DarkModeToggle from "@/components/DarkModeToggle.vue";
 
 const props = defineProps({
     href: {
@@ -23,4 +24,5 @@ const classes = computed(() =>
     <Link :href="href" :class="classes">
         <slot />
     </Link>
+
 </template>

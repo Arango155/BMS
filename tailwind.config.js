@@ -17,6 +17,10 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                darkBg: '#1a202c', // Color de fondo en modo oscuro
+                darkText: '#ffffff', // Color de texto en modo oscuro
+            },
         },
     },
 

@@ -41,8 +41,9 @@ const isMenuOpen = ref(false);
             <div class="hidden sm:flex flex-1 justify-center space-x-8">
                 <Link v-for="link in ['features', 'solutions', 'plans', 'pricing', 'download', 'modules', 'community', 'other']"
                       :key="link" :href="`#${link}`"
-                      class="text-gray-600 hover:text-blue-500 transition-colors duration-300 capitalize">
+                      class="text-gray-600 hover:text-blue-500 transition-colors duration-300 capitalize flex items-center">
                     {{ link }}
+                    <i class="fas fa-chevron-down ml-2"></i> <!-- Icono de flecha abajo -->
                 </Link>
             </div>
 
@@ -83,6 +84,10 @@ const isMenuOpen = ref(false);
     </div>
 
 <main>
+
+
+
+
     <div class="text-center mt-6">
         <button onclick="showCodeSkills()" class="btn btn-primary">Modules</button>
         <button onclick="showSoftSkills()" class="btn btn-light ml-4">Features</button>
