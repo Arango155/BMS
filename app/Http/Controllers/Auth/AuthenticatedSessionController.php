@@ -34,7 +34,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        if (Auth::user()->onboarding_completo) {
+            return redirect()->route('dashboard');
+        } else {
+            return redirect()->route('onboarding');
+        }
+
     }
 
     /**

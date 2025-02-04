@@ -2,23 +2,29 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        Inertia::share([
+            'auth' => function () {
+                if (Auth::check()) {
+                    return [
+                        'user' => Auth::user()->only(['id', 'name', 'email', 'onboarding_completo']),
+                        'profile' => Auth::user()->profile ? Auth::user()->profile->only(['empresa_tipo', 'empresa_nombre']) : null,
+                    ];
+                }
+                return null;
+            },
+        ]);
     }
 }
