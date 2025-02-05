@@ -12,14 +12,16 @@ const { profile } = usePage().props;
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-       
+
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <p>¡Has iniciado sesión!</p>
-
+                        <div class="mt-4">
+                            <a :href="route('users.index')" class="bg-blue-500 text-white px-4 py-2 rounded">Gestión de Usuarios</a>
+                        </div>
                         <div v-if="profile">
                             <p><strong>Nombre del Dashboard:</strong> {{ profile.dashboard_name || 'No disponible' }}</p>
                             <p><strong>Empresa:</strong> {{ profile.empresa_nombre || 'No disponible' }}</p>
