@@ -102,7 +102,7 @@ const isMenuOpen = ref(false);
             </button>
         </div>
 
-        <div id="codingskills" class="margin grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+        <div id="codingskills" class="margin grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
             <div class="card" v-for="skill in currentSkills" :key="skill.title">
                 <i :class="skill.icon"></i>
                 <span class="font-bold">{{ skill.title }}</span>
