@@ -12,11 +12,7 @@ const { profile } = usePage().props;
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Dashboard
-            </h2>
-        </template>
+       
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -31,17 +27,17 @@ const { profile } = usePage().props;
                             <p><strong>Módulos:</strong> {{ profile.modulos || 'No disponible' }}</p>
                             <p><strong>Onboarding Completo:</strong>
                                 <span :class="profile.onboarding_completo ? 'text-green-500' : 'text-red-500'">
-            {{ profile.onboarding_completo ? 'Sí' : 'No' }}
-        </span>
+                                    {{ profile.onboarding_completo ? 'Sí' : 'No' }}
+                                </span>
                             </p>
                         </div>
                         <div v-else>
                             <p class="text-red-500">Perfil no disponible.</p>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
+
