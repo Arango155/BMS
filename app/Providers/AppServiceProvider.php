@@ -20,11 +20,19 @@ class AppServiceProvider extends ServiceProvider
                 if (Auth::check()) {
                     return [
                         'user' => Auth::user()->only(['id', 'name', 'email', 'onboarding_completo']),
-                        'profile' => Auth::user()->profile ? Auth::user()->profile->only(['empresa_tipo', 'empresa_nombre']) : null,
+                        'profile' => Auth::user()->profile ? Auth::user()->profile->only([
+                            'dashboard_name',
+                            'empresa_tipo',
+                            'empresa_nombre',
+                            'modulos',
+                            'onboarding_completo',
+                        ]) : null,
+
                     ];
                 }
                 return null;
             },
         ]);
     }
+
 }

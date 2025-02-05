@@ -10,6 +10,8 @@ use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 
+
+
 Route::get('/test-inertia', function () {
     return Inertia::render('Test', ['message' => 'Inertia está funcionando']);
 });

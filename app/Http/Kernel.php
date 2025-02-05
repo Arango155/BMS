@@ -26,6 +26,7 @@ class Kernel extends HttpKernel
 
     protected $routeMiddleware = [
         'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingIsComplete::class,
+
     ];
 
 

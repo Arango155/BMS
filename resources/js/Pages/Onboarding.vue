@@ -3,15 +3,20 @@ import { ref } from "vue";
 import { useForm } from "@inertiajs/vue3";
 
 const form = useForm({
-    empresa: "",
-    tipo_empresa: "",
+    dashboard_name: "",
+    empresa_nombre: "", // Cambia de "empresa" a "empresa_nombre"
+    empresa_tipo: "", // Cambia de "tipo_empresa" a "empresa_tipo"
+    modulos: "",
+    onboarding_completo: false,
 });
 
-const statusMessage = ref(""); // Mensaje de confirmación o error
-const isSubmitting = ref(false); // Evita múltiples envíos
+
+const statusMessage = ref("");
+const isSubmitting = ref(false);
 
 const submit = () => {
-    if (!form.empresa || !form.tipo_empresa) {
+    // Cambia la validación de los campos a los nombres correctos en form
+    if (!form.empresa_nombre || !form.empresa_tipo) {
         statusMessage.value = "Todos los campos son obligatorios.";
         return;
     }
@@ -33,6 +38,7 @@ const submit = () => {
         }
     });
 };
+
 </script>
 
 <template>
@@ -40,13 +46,24 @@ const submit = () => {
         <h2 class="text-lg font-bold">Completa tu perfil</h2>
         <form @submit.prevent="submit">
             <label class="block mt-4">
+                Nombre del dashboard:
+                <input type="text" v-model="form.dashboard_name" class="border p-2 w-full" />
+            </label>
+
+            <label class="block mt-4">
                 Nombre de la empresa:
-                <input type="text" v-model="form.empresa" class="border p-2 w-full" />
+                <input type="text" v-model="form.empresa_nombre" class="border p-2 w-full" />
             </label>
 
             <label class="block mt-4">
                 Tipo de empresa:
-                <input type="text" v-model="form.tipo_empresa" class="border p-2 w-full" />
+                <input type="text" v-model="form.empresa_tipo" class="border p-2 w-full" />
+            </label>
+
+
+            <label class="block mt-4">
+                Módulos:
+                <input type="text" v-model="form.modulos" class="border p-2 w-full" />
             </label>
 
             <button

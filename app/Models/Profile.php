@@ -14,12 +14,11 @@ class Profile extends Model
         'dashboard_name',
         'empresa_tipo',
         'empresa_nombre',
-        'modulos', // Se almacena como JSON
+        'modulos',
         'onboarding_completo',
     ];
 
     protected $casts = [
-        'modulos' => 'array', // Laravel convertirá automáticamente el JSON a un array
         'onboarding_completo' => 'boolean',
     ];
 

@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('dashboard_name')->nullable();
             $table->string('empresa_tipo')->nullable();
             $table->string('empresa_nombre')->nullable();
-            $table->json('modulos')->nullable();
+            $table->string('modulos')->nullable();
             $table->boolean('onboarding_completo')->default(false);
             $table->timestamps();
         });
