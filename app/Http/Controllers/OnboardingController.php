@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use App\Models\Empresa;
 use App\Models\Profile;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class OnboardingController extends Controller
 {
@@ -16,38 +20,99 @@ class OnboardingController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Onboarding request received', $request->all());
+        $user = Auth::user();
 
-        // Validación de los campos con los nombres correctos
-        $request->validate([
-            'dashboard_name' => 'required|string|max:255', // Validar nombre del dashboard
-            'empresa_nombre' => 'required|string|max:255', // Cambiado de "empresa"
-            'empresa_tipo' => 'required|string|max:255',   // Cambiado de "tipo_empresa"
-            'modulos' => 'required|string|max:255',         // Validación de modulos
-            'onboarding_completo' => 'required|boolean',    // Validación de onboarding
+        // 🔹 **Crear la empresa y base de datos**
+        $empresaNombre = strtolower($request->empresa_nombre);
+        $dbName = $empresaNombre;
+
+        DB::statement("CREATE DATABASE IF NOT EXISTS {$dbName}");
+
+        $empresa = Empresa::create([
+            'nombre' => $empresaNombre,
+            'db_name' => $dbName,
         ]);
 
-        $user = Auth::user();
-        Log::info('User before update', ['user' => $user]);
+        // 🔹 **Actualizar el usuario en la base de datos principal**
+        User::where('id', $user->id)->update([
+            'onboarding_completo' => true,
+            'empresa_id' => $empresa->id,
+        ]);
 
-        // Asegurar que el usuario tiene un perfil
-        $profile = $user->profile ?? new Profile(['user_id' => $user->id]);
+        // 🔹 **Recargar el usuario para asegurarnos de que Laravel usa los datos actualizados**
+        $user = User::find($user->id);
+        Auth::setUser($user);
 
-        // Actualizar el perfil con los campos del frontend
-        $profile->dashboard_name = $request->dashboard_name;  // Añadir nombre del dashboard
-        $profile->empresa_nombre = $request->empresa_nombre;  // Cambiado de "empresa"
-        $profile->empresa_tipo = $request->empresa_tipo;      // Cambiado de "tipo_empresa"
-        $profile->modulos = $request->modulos;                 // Guardar modulos
-        $profile->onboarding_completo = $request->onboarding_completo;  // Guardar onboarding completo
-        $profile->save();
+        // 🔹 **Configurar la conexión a la base de datos tenant**
+        config(['database.connections.tenant.database' => $dbName]);
+        DB::purge('tenant');
+        DB::reconnect('tenant');
 
-        // Actualizar el usuario
-        $user->onboarding_completo = true;
-        $user->save();
+        // 🔹 **Ejecutar migraciones en la base de datos tenant**
+        Artisan::call('migrate', ['--database' => 'tenant', '--force' => true]);
 
-        Log::info('User after update', ['user' => $user]);
+        // 🔹 **Registrar la empresa en la base de datos tenant**
+        $tenantEmpresa = Empresa::on('tenant')->create([
+            'id' => $empresa->id,
+            'nombre' => $empresaNombre,
+            'db_name' => $dbName,
+        ]);
 
-        // Redireccionar con un mensaje de éxito
-        return redirect()->route('dashboard')->with('success', 'Onboarding completado correctamente.');
+        // 🔹 **Crear roles por defecto en el tenant**
+        $roles = ['admin', 'empleado', 'gerente'];
+        foreach ($roles as $role) {
+            Role::on('tenant')->firstOrCreate([
+                'name' => $role,
+                'guard_name' => 'web',
+            ]);
+        }
+
+        // 🔹 **Crear usuario en tenant**
+        $tenantUser = User::on('tenant')->firstOrCreate(
+            ['email' => $user->email],
+            [
+                'name' => $user->name,
+                'password' => bcrypt(uniqid()),
+                'empresa_id' => $tenantEmpresa->id,
+                'onboarding_completo' => true,
+            ]
+        );
+
+        // 🔹 **Asignar el rol de admin al usuario creador**
+        $adminRole = Role::on('tenant')->where('name', 'admin')->first();
+        if ($adminRole) {
+            $tenantUser->assignRole($adminRole);
+        } else {
+            \Log::error("⚠️ El rol 'admin' no se creó correctamente en la base de datos tenant.");
+        }
+
+        // 🔹 **Crear perfil en la base de datos tenant**
+        Profile::on('tenant')->updateOrCreate(
+            ['user_id' => $tenantUser->id],
+            [
+                'dashboard_name' => $request->dashboard_name,
+                'empresa_nombre' => $empresaNombre,
+                'empresa_tipo' => $request->empresa_tipo,
+                'modulos' => $request->modulos,
+                'onboarding_completo' => true,
+            ]
+        );
+
+        // 🔹 **Recargar y autenticar correctamente al usuario en la base de datos principal**
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        $user = User::where('email', $tenantUser->email)->first();
+        if ($user) {
+            Auth::login($user);
+            session()->put('empresa_id', $empresa->id);
+            session()->save();
+        } else {
+            \Log::error("❌ No se pudo encontrar el usuario en la base de datos principal.");
+            return redirect()->route('onboarding')->with('error', 'Hubo un problema con la autenticación.');
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Onboarding completado correctamente');
     }
 }

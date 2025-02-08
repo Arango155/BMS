@@ -25,7 +25,10 @@ class Kernel extends HttpKernel
 
 
     protected $routeMiddleware = [
-        'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingIsComplete::class,
+        'onboarding.complete' => \App\Http\Middleware\EnsureOnboardingIsCompleteMiddleware::class,
+        'switch.database' => \App\Http\Middleware\SwitchDatabase::class,
+//        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+//        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
 
     ];
 
@@ -45,6 +48,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\SwitchDatabase::class,
         ],
 
         'api' => [

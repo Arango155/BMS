@@ -5,16 +5,19 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up() {
+    public function up()
+    {
         Schema::table('users', function (Blueprint $table) {
-            $table->boolean('onboarding_completo')->default(false); // Si no existe aún
+            $table->foreignId('empresa_id')->nullable()->constrained('empresas')->onDelete('cascade');
         });
     }
 
-
-    public function down() {
+    public function down()
+    {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('onboarding_completo');
+            $table->dropForeign(['empresa_id']);
+            $table->dropColumn('empresa_id');
         });
     }
 };
+

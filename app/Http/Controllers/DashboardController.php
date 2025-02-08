@@ -1,25 +1,30 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role;
 
-class DashboardController extends Controller {
-    public function index() {
-        // Obtener el usuario autenticado
-        $user = auth()->user();
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $user = auth()->user()->load('profile');
 
-        // Verificar si el perfil del usuario existe
-        $profile = $user->profile;
+        // 🔹 Obtener el rol del usuario desde la base de datos tenant
+        $tenantUser = \App\Models\User::on('tenant')->find($user->id);
+        $role = $tenantUser ? $tenantUser->getRoleNames()->first() : 'sin rol';
 
-        // Verificar si el perfil está presente, si no, se podría redirigir o mostrar un mensaje
-        if (!$profile) {
-            // Puedes redirigir o manejar el error de forma más amigable
-            return redirect()->route('onboarding'); // O cualquier otra ruta según tu flujo
-        }
-
-        // Pasar los datos del perfil a la vista
         return Inertia::render('Dashboard', [
-            'profile' => $profile,  // Pasar el perfil para que esté disponible en la vista
+            'profile' => $user->profile ?? null,
+            'auth' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $role, // 🔥 Ahora sí se envía el rol correcto
+                ],
+            ],
         ]);
     }
 }
