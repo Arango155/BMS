@@ -46,6 +46,7 @@ const sendInvitation = () => {
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
                         <p>¡Has iniciado sesión!</p>
+                        <p><strong>Base de datos activa:</strong> {{ $page.props.currentDatabase }}</p>
 
                         <!-- 📌 Botón para gestión de usuarios -->
                         <div class="mt-4">

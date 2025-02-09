@@ -10,6 +10,7 @@ use App\Models\Empresa;
 use App\Models\Profile;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Log;
 
 class OnboardingController extends Controller
 {
@@ -22,7 +23,7 @@ class OnboardingController extends Controller
     {
         $user = Auth::user();
 
-        // 🔹 **Crear la empresa y base de datos**
+        // 🔹 Crear la empresa y base de datos
         $empresaNombre = strtolower($request->empresa_nombre);
         $dbName = $empresaNombre;
 
@@ -33,32 +34,31 @@ class OnboardingController extends Controller
             'db_name' => $dbName,
         ]);
 
-        // 🔹 **Actualizar el usuario en la base de datos principal**
-        User::where('id', $user->id)->update([
+        // 🔹 Actualizar usuario en la base de datos principal
+        $user->update([
             'onboarding_completo' => true,
             'empresa_id' => $empresa->id,
         ]);
 
-        // 🔹 **Recargar el usuario para asegurarnos de que Laravel usa los datos actualizados**
-        $user = User::find($user->id);
+        // 🔄 Recargar el usuario actualizado
         Auth::setUser($user);
 
-        // 🔹 **Configurar la conexión a la base de datos tenant**
+        // 🔄 Configurar conexión a la base de datos tenant
         config(['database.connections.tenant.database' => $dbName]);
         DB::purge('tenant');
         DB::reconnect('tenant');
 
-        // 🔹 **Ejecutar migraciones en la base de datos tenant**
+        // 🔹 Ejecutar migraciones en la base de datos tenant
         Artisan::call('migrate', ['--database' => 'tenant', '--force' => true]);
 
-        // 🔹 **Registrar la empresa en la base de datos tenant**
+        // 🔹 Crear empresa en tenant
         $tenantEmpresa = Empresa::on('tenant')->create([
             'id' => $empresa->id,
             'nombre' => $empresaNombre,
             'db_name' => $dbName,
         ]);
 
-        // 🔹 **Crear roles por defecto en el tenant**
+        // 🔹 Crear roles en tenant
         $roles = ['admin', 'empleado', 'gerente'];
         foreach ($roles as $role) {
             Role::on('tenant')->firstOrCreate([
@@ -67,7 +67,7 @@ class OnboardingController extends Controller
             ]);
         }
 
-        // 🔹 **Crear usuario en tenant**
+        // 🔹 Crear usuario en tenant
         $tenantUser = User::on('tenant')->firstOrCreate(
             ['email' => $user->email],
             [
@@ -78,16 +78,16 @@ class OnboardingController extends Controller
             ]
         );
 
-        // 🔹 **Asignar el rol de admin al usuario creador**
+        // 🔹 Asignar el rol de admin
         $adminRole = Role::on('tenant')->where('name', 'admin')->first();
         if ($adminRole) {
             $tenantUser->assignRole($adminRole);
         } else {
-            \Log::error("⚠️ El rol 'admin' no se creó correctamente en la base de datos tenant.");
+            Log::error("⚠️ El rol 'admin' no se creó correctamente en la base de datos tenant.");
         }
 
         // 🔹 **Crear perfil en la base de datos tenant**
-        Profile::on('tenant')->updateOrCreate(
+        $profile = Profile::on('tenant')->updateOrCreate(
             ['user_id' => $tenantUser->id],
             [
                 'dashboard_name' => $request->dashboard_name,
@@ -98,20 +98,28 @@ class OnboardingController extends Controller
             ]
         );
 
-        // 🔹 **Recargar y autenticar correctamente al usuario en la base de datos principal**
+        // 🔹 **Registrar logs para verificar si el perfil se creó**
+        Log::info('Perfil creado en tenant:', [
+            'database' => DB::connection('tenant')->getDatabaseName(),
+            'user_id' => $tenantUser->id,
+            'profile' => $profile,
+        ]);
+
+        // 🔄 Cerrar sesión y volver a iniciar sesión
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
 
-        $user = User::where('email', $tenantUser->email)->first();
-        if ($user) {
-            Auth::login($user);
-            session()->put('empresa_id', $empresa->id);
-            session()->save();
-        } else {
-            \Log::error("❌ No se pudo encontrar el usuario en la base de datos principal.");
-            return redirect()->route('onboarding')->with('error', 'Hubo un problema con la autenticación.');
-        }
+        // 🔄 Iniciar sesión con el usuario correcto
+        Auth::login($user);
+
+        // 🔄 Actualizar sesión con la empresa correcta
+        session()->put('empresa_id', $empresa->id);
+        session()->save();
+
+        // 🔄 Forzar el cambio de base de datos en la siguiente petición
+        DB::purge('tenant');
+        DB::reconnect('tenant');
 
         return redirect()->route('dashboard')->with('success', 'Onboarding completado correctamente');
     }
