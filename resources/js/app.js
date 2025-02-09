@@ -10,12 +10,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Footer from './components/Footer.vue';
-import { useDark } from '@vueuse/core'; // Importa VueUse para manejar el modo oscuro
-import DarkModeToggle from './components/DarkModeToggle.vue'; // Importa el componente
+import { useDark } from '@vueuse/core';
+import DarkModeToggle from './components/DarkModeToggle.vue';
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 const appName = import.meta.env.VITE_APP_NAME || 'BMS';
 
-// Detecta el modo oscuro al cargar la página
+// Detecta el modo oscuro
 const isDark = useDark();
 if (isDark.value) document.documentElement.classList.add('dark');
 else document.documentElement.classList.remove('dark');
@@ -28,8 +30,16 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(Toast, { // 📌 🔥 Agregamos configuración para Toast
+                position: "top-right",
+                timeout: 3000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                showCloseButtonOnHover: false,
+            })
             .component('Footer', Footer)
-            .component('DarkModeToggle', DarkModeToggle) // Registra el componente
+            .component('DarkModeToggle', DarkModeToggle)
             .mount(el);
     },
     progress: {

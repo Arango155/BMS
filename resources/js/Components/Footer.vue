@@ -1,6 +1,6 @@
 <template>
 
-    <footer class="bg-gray-100 text-black p-6 mt-6 flex flex-wrap justify-between text-sm">
+    <footer class="bg-gray-50 text-black p-6 mt-6 flex flex-wrap justify-between text-sm">
         <div class="flex flex-col items-start">
             <div class="flex items-center gap-2">
                 <img src="https://cdn-icons-png.flaticon.com/256/4951/4951200.png" alt="BMS Logo" class="h-8">

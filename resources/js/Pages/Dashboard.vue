@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { useForm, Head, usePage } from '@inertiajs/vue3';
+import { useToast } from 'vue-toastification'; // Importar Vue Toastification
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -12,11 +13,9 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const profile = computed(() => page.props.profile);
 const showInviteModal = ref(false);
+const toast = useToast(); // Inicializar el toast
 
 console.log("Usuario en Vue:", user.value); // 🔍 Verifica en la consola del navegador
-
-
-
 
 // 📌 Formulario de invitación
 const form = useForm({
@@ -24,13 +23,16 @@ const form = useForm({
     role: 'empleado',
 });
 
-// 📌 Enviar la invitación
+// 📌 Enviar la invitación con notificación toast
 const sendInvitation = () => {
     form.post(route('invite.send'), {
         onSuccess: () => {
             form.reset();
             showInviteModal.value = false;
-            alert('Invitación enviada con éxito.');
+            toast.success('✅ Invitación enviada con éxito.', { timeout: 3000 });
+        },
+        onError: (errors) => {
+            toast.error('❌ Error al enviar la invitación.', { timeout: 3000 });
         },
     });
 };
@@ -56,7 +58,6 @@ const sendInvitation = () => {
                                 Invitar Usuario
                             </button>
                         </div>
-
 
                         <div v-if="profile" class="mt-4">
                             <p><strong>Nombre del Dashboard:</strong> {{ profile.dashboard_name || 'No disponible' }}</p>

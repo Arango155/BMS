@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.bg-gray-100 {
+    --tw-bg-opacity: 1;
+    background-color: white !important;
+}
+
 .card {
     cursor: pointer;
     padding: 16px;
