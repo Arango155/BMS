@@ -7,23 +7,26 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Profile;
+use Spatie\Permission\Models\Role;
+
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user(); // No cargamos aún el perfil
-
-        // 🔹 Obtener el nombre de la base de datos actual
+        $user = auth()->user();
         $currentDatabase = DB::connection('tenant')->getDatabaseName();
-
-        // 🔹 Buscar el usuario en la base tenant
         $tenantUser = User::on('tenant')->with('profile')->find($user->id);
 
-        // 🔹 Verificar si tiene un perfil en la base tenant
         $profile = $tenantUser ? $tenantUser->profile : null;
+        $roles = $tenantUser ? $tenantUser->getRoleNames() : collect([]);
 
-        \Log::info('Base de datos activa:', ['database' => $currentDatabase, 'user_id' => $user->id, 'profile' => $profile]);
+        \Log::info('Base de datos activa:', [
+            'database' => $currentDatabase,
+            'user_id' => $user->id,
+            'profile' => $profile,
+            'roles' => $roles
+        ]);
 
         return Inertia::render('Dashboard', [
             'profile' => $profile,
@@ -32,9 +35,10 @@ class DashboardController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'roles' => $roles, // 👈 Ahora los roles están disponibles en el frontend
                 ],
             ],
-            'currentDatabase' => $currentDatabase, // 🔥 Enviar base de datos al frontend
+            'currentDatabase' => $currentDatabase,
         ]);
     }
 }

@@ -54,8 +54,9 @@ const sendInvitation = () => {
                         </div>
 
                         <!-- 📌 Botón de invitación (Solo visible para admin) -->
-                        <div v-if="user?.role === 'admin'" class="mt-4">
-                            <button @click="showInviteModal = true" class="bg-green-500 text-white px-4 py-2 rounded">
+                        <div v-if="user?.roles?.includes('admin')" class="mt-4">
+
+                        <button @click="showInviteModal = true" class="bg-green-500 text-white px-4 py-2 rounded">
                                 Invitar Usuario
                             </button>
                         </div>
