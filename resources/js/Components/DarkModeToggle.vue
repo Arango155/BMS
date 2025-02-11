@@ -1,34 +1,23 @@
-<template>
-    <button @click="toggleDarkMode" class="p-2 bg-gray-200 dark:bg-gray-800 rounded">
-        {{ isDark ? '☀️' : '🌙' }}
-    </button>
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useDark } from '@vueuse/core';
+import { ref } from "vue";
+import { VueDraggableNext } from "vue-draggable-next";
 
-// Usamos useDark para detectar el estado inicial
-const isDark = useDark();
-
-// Función para alternar entre modos claro y oscuro
-const toggleDarkMode = () => {
-    isDark.value = !isDark.value;
-    // Guardar el estado en localStorage para mantenerlo
-    localStorage.setItem('dark-mode', isDark.value ? 'true' : 'false');
-};
-
-// Cargar el estado de localStorage cuando se monta el componente
-onMounted(() => {
-    const savedMode = localStorage.getItem('dark-mode');
-    if (savedMode === 'true') {
-        isDark.value = true;
-    } else {
-        isDark.value = false;
-    }
-});
+const tasks = ref([
+    { id: 1, text: "Tarea 1" },
+    { id: 2, text: "Tarea 2" },
+    { id: 3, text: "Tarea 3" },
+]);
 </script>
 
-<style scoped>
-/* Estilos opcionales */
-</style>
+<template>
+    <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md w-full">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Tablero de Tareas</h2>
+        <VueDraggableNext v-model="tasks" group="tasks" item-key="id" class="space-y-2">
+            <template #item="{ element }">
+                <div class="p-4 bg-blue-100 dark:bg-blue-700 text-blue-900 dark:text-white rounded-md shadow cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-600">
+                    {{ element.text }}
+                </div>
+            </template>
+        </VueDraggableNext>
+    </div>
+</template>

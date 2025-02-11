@@ -8,8 +8,17 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import Card from '@/Components/ui/Card.vue';
-import CardContent from '@/Components/ui/CardContent.vue';
+import CustomCard from '@/Components/CustomCard.vue';
+import TiptapEditor from '@/Components/TiptapEditor.vue';
+import DraggableBoard from '@/Components/DraggableBoard.vue';
+import { Plus, Bell, MessageCircle, Users, BarChart2 } from 'lucide-vue-next';
+import { useMotion } from '@vueuse/motion';
+import { Doughnut, Bar } from 'vue-chartjs';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import VueCal from 'vue-cal';
+import 'vue-cal/dist/vuecal.css';
+
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -34,62 +43,34 @@ const sendInvitation = () => {
         },
     });
 };
+
+const chartData = {
+    labels: ['Ventas', 'Usuarios', 'Tareas'],
+    datasets: [
+        {
+            data: [300, 150, 100],
+            backgroundColor: ['#4F46E5', '#22C55E', '#F97316'],
+        },
+    ],
+};
+
+const barChartData = {
+    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
+    datasets: [
+        {
+            label: 'Visitas',
+            data: [40, 60, 80, 100, 120],
+            backgroundColor: '#2563EB',
+        },
+    ],
+};
 </script>
 
 <template>
+
+
     <Head title="Dashboard" />
     <AuthenticatedLayout>
-        <div class="p-6 max-w-6xl mx-auto grid gap-6">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Bienvenido, {{ user?.name }}</h1>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <Card>
-                    <CardContent>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Base de datos activa</p>
-                        <h2 class="text-lg font-semibold">{{ $page.props.currentDatabase || 'No disponible' }}</h2>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Empresa</p>
-                        <h2 class="text-lg font-semibold">{{ profile?.empresa_nombre || 'No disponible' }}</h2>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Tipo de empresa</p>
-                        <h2 class="text-lg font-semibold">{{ profile?.empresa_tipo || 'No disponible' }}</h2>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-6">
-                <Card>
-                    <CardContent>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Módulos</p>
-                        <h2 class="text-lg font-semibold">{{ profile?.modulos || 'No disponible' }}</h2>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm">Onboarding Completo</p>
-                        <h2 :class="profile?.onboarding_completo ? 'text-green-500' : 'text-red-500'">
-                            {{ profile?.onboarding_completo ? 'Sí' : 'No' }}
-                        </h2>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <div class="flex gap-4">
-                <a :href="route('users.index')" class="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600">Gestión de Usuarios</a>
-                <button v-if="user?.roles?.includes('admin')" @click="showInviteModal = true" class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600">
-                    Invitar Usuario
-                </button>
-            </div>
-        </div>
 
         <Modal :show="showInviteModal" @close="showInviteModal = false">
             <div class="p-6">
@@ -117,5 +98,96 @@ const sendInvitation = () => {
                 </form>
             </div>
         </Modal>
+
+        <div class="flex flex-col min-h-screen">
+            <div class="flex flex-1">
+                <!-- Barra Lateral -->
+                <aside class="w-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-6 flex flex-col gap-4 border-r border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold">Módulos</h2>
+                    <nav class="flex flex-col gap-3">
+                        <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Users /> Usuarios
+                        </a>
+
+                        <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <BarChart2 /> Reportes
+                        </a>
+                        <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <MessageCircle /> Mensajes
+                        </a>
+                        <a :href="route('users.index')" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Users /> Gestión de Usuarios
+                        </a>
+                    </nav>
+                </aside>
+
+                <div class="flex-1 p-8 max-w-7xl mx-auto grid gap-10">
+                    <div class="flex justify-between items-center">
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">Bienvenido, {{ user?.name }}</h1>
+                        <div class="flex gap-4">
+                            <button class="p-3 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600">
+                                <Bell />
+                            </button>
+                            <button @click="showInviteModal = true" class="flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:scale-105 transition-all">
+                                <Plus class="mr-2" /> Invitar Usuario
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <CustomCard title="📊 Ventas Semanales">
+                            <Doughnut :data="chartData" />
+                        </CustomCard>
+                        <CustomCard title="📈 Visitas">
+                            <Bar :data="barChartData" />
+                        </CustomCard>
+
+                    </div>
+
+
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <CustomCard title="📊 Base de Datos Activa">
+                            <p class="text-lg font-semibold">{{ $page.props.currentDatabase || 'No disponible' }}</p>
+                        </CustomCard>
+                        <CustomCard title="🏢 Nombre de la Empresa">
+                            <p class="text-lg font-semibold">{{ profile?.empresa_nombre || 'No disponible' }}</p>
+                        </CustomCard>
+                        <CustomCard title="🏷️ Tipo de Empresa">
+                            <p class="text-lg font-semibold">{{ profile?.empresa_tipo || 'No disponible' }}</p>
+                        </CustomCard>
+                        <CustomCard title="🖥️ Nombre del Dashboard">
+                            <p class="text-lg font-semibold">{{ profile?.dashboard_name || 'No disponible' }}</p>
+                        </CustomCard>
+                        <CustomCard title="✅ Onboarding Activo">
+                            <p class="text-lg font-semibold">{{ profile?.onboarding_completo ? 'Sí' : 'No' }}</p>
+                        </CustomCard>
+                        <CustomCard title="📂 Módulos Disponibles">
+                            <p class="text-lg font-semibold">{{ profile?.modulos || 'No disponible' }}</p>
+                        </CustomCard>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <CustomCard title="📝 Editor de Notas">
+                            <TiptapEditor />
+                        </CustomCard>
+                        <CustomCard title="📌 Tablero de Tareas">
+                            <DraggableBoard />
+                        </CustomCard>
+                    </div>
+
+                    <div class="mt-8">
+                        <CustomCard title="📅 Calendario de Eventos">
+                            <VueCal />
+                        </CustomCard>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-gray-200 dark:bg-gray-800 text-center p-4 mt-auto">
+                <p class="text-gray-700 dark:text-gray-300">© 2025 BMS. Todos los derechos reservados.</p>
+            </footer>
+        </div>
     </AuthenticatedLayout>
 </template>
