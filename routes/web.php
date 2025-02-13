@@ -75,3 +75,53 @@ Route::post('/register-invited', [InvitationController::class, 'registerInvitedU
 
 // 🔄 Rutas de autenticación proporcionadas por Laravel Breeze/Fortify
 require __DIR__.'/auth.php';
+
+
+
+
+//Inventario
+
+Route::get('/inventario', function () {
+    return Inertia::render('Inventario');
+})->name('inventario');
+
+
+Route::get('/inventario/Caja', function () {
+    return Inertia::render('Inventario/Caja');
+})->name('inventario.Caja');
+
+Route::get('/inventario/Proveedor', function () {
+    return Inertia::render('Inventario/Proveedor');
+})->name('inventario.Proveedor');
+
+Route::get('/inventario/Categorias', function () {
+    return Inertia::render('Inventario/Categorias');
+})->name('inventario.Categorias');
+
+Route::get('/inventario/Usuarios', function () {
+    return Inertia::render('Inventario/Usuarios');
+})->name('inventario.Usuarios');
+
+Route::get('/inventario/Productos', function () {
+    return Inertia::render('Inventario/Productos');
+})->name('inventario.Productos');
+
+Route::get('/inventario/Clientes', function () {
+    return Inertia::render('Inventario/Clientes');
+})->name('inventario.Clientes');
+
+Route::get('/inventario/Ventas', function () {
+    return Inertia::render('Inventario/Ventas');
+})->name('inventario.Ventas');
+
+Route::get('/inventario/Cotizaciones', function () {
+    return Inertia::render('Inventario/Cotizaciones');
+})->name('inventario.Cotizaciones');
+
+Route::get('/inventario/Devoluciones', function () {
+    return Inertia::render('Inventario/Devoluciones');
+})->name('inventario.Devoluciones');
+
+Route::get('/inventario/Compras', function () {
+    return Inertia::render('Inventario/Compras');
+})->name('inventario.Compras');

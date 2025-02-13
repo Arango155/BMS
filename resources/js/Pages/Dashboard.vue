@@ -115,6 +115,11 @@ const barChartData = {
                         <a href="#" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
                             <MessageCircle /> Mensajes
                         </a>
+
+                        <a :href="route('inventario')" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <Users /> Inventario
+                        </a>
+
                         <a :href="route('users.index')" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800">
                             <Users /> Gestión de Usuarios
                         </a>

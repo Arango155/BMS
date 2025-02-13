@@ -67,6 +67,7 @@ createInertiaApp({
             .component('DialogPanel', DialogPanel)
             .component('DialogTitle', DialogTitle)
             .component('DialogDescription', DialogDescription)
+
             .mount(el);
     },
     progress: {
