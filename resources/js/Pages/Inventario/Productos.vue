@@ -2,135 +2,150 @@
 import { ref, computed } from 'vue';
 
 // Estado para controlar qué sección se muestra
-const vistaActual = ref('lista'); // 'lista', 'nueva', 'buscar', 'editar'
+const vistaActual = ref('lista'); // 'lista', 'nueva', 'buscar', 'almacen', 'masVendidos', 'porCategoria', 'porVencimiento', 'stockMinimo'
 
-// Estado de la lista de cajas
-const cajas = ref([
-    { id: 1, numero: '001', nombre: 'Caja Principal', efectivo: 1500, estado: 'Activa' },
-    { id: 2, numero: '002', nombre: 'Caja Secundaria', efectivo: 800, estado: 'Inactiva' }
+// Estado de la lista de productos
+const productos = ref([
+    { id: 1, codigo: '1234', sku: '4321', nombre: 'Aceite', stock: 15, stock_min: 5, precio: 480, descuento: 20, estado: 'Habilitado', vencimiento: 'No tiene', vendidos: 11, categoria: 'Alimentos' },
+    { id: 2, codigo: '0001', sku: '0000333', nombre: 'Celular A55', stock: 62, stock_min: 10, precio: 15, descuento: 0, estado: 'Habilitado', vencimiento: 'En 306 días', vendidos: 32, categoria: 'Electrónica' }
 ]);
 
-// Estado del formulario de nueva caja
-const nuevaCaja = ref({ numero: '', nombre: '', efectivo: '', estado: 'Activa' });
-
-// Estado para la búsqueda de cajas
-const busqueda = ref('');
-const cajaEncontrada = computed(() => {
-    return cajas.value.find(caja => caja.numero === busqueda.value);
+// Estado del formulario de nuevo producto
+const nuevoProducto = ref({
+    codigo: '',
+    sku: '',
+    nombre: '',
+    stock: '',
+    stock_min: '',
+    precio: '',
+    descuento: '',
+    estado: 'Habilitado',
+    vencimiento: 'No tiene',
+    categoria: '',
+    vendidos: 0
 });
 
-// Estado para manejar la edición de una caja
-const cajaEditando = ref(null);
+// Estado para la búsqueda de productos
+const busqueda = ref('');
+const productoEncontrado = computed(() => {
+    return productos.value.find(producto => producto.codigo.includes(busqueda.value) || producto.nombre.toLowerCase().includes(busqueda.value.toLowerCase()));
+});
 
-// Función para seleccionar una caja y editarla
-const editarCaja = (caja) => {
-    cajaEditando.value = { ...caja }; // Copiar valores de la caja seleccionada
+// Estado para manejar la edición de un producto
+const productoEditando = ref(null);
+
+// Función para seleccionar un producto y editarlo
+const editarProducto = (producto) => {
+    productoEditando.value = { ...producto };
     vistaActual.value = 'editar';
 };
 
-// Función para guardar los cambios en la caja editada
+// Función para guardar los cambios en el producto editado
 const guardarEdicion = () => {
-    const index = cajas.value.findIndex(c => c.id === cajaEditando.value.id);
+    const index = productos.value.findIndex(p => p.id === productoEditando.value.id);
     if (index !== -1) {
-        cajas.value[index] = { ...cajaEditando.value }; // Actualizar datos en la lista
+        productos.value[index] = { ...productoEditando.value };
     }
-    cajaEditando.value = null;
+    productoEditando.value = null;
     vistaActual.value = 'lista';
 };
 
-// Función para eliminar una caja
-const eliminarCaja = (id) => {
-    cajas.value = cajas.value.filter(caja => caja.id !== id);
+// Función para eliminar un producto
+const eliminarProducto = (id) => {
+    productos.value = productos.value.filter(producto => producto.id !== id);
 };
 
-// Agregar nueva caja
-const agregarCaja = () => {
-    cajas.value.push({ id: cajas.value.length + 1, ...nuevaCaja.value });
-    nuevaCaja.value = { numero: '', nombre: '', efectivo: '', estado: 'Activa' };
+// Función para agregar un nuevo producto
+const agregarProducto = () => {
+    productos.value.push({ id: productos.value.length + 1, ...nuevoProducto.value });
+    nuevoProducto.value = {
+        codigo: '',
+        sku: '',
+        nombre: '',
+        stock: '',
+        stock_min: '',
+        precio: '',
+        descuento: '',
+        estado: 'Habilitado',
+        vencimiento: 'No tiene',
+        categoria: '',
+        vendidos: 0
+    };
     vistaActual.value = 'lista';
 };
 </script>
 
 <template>
     <div class="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">️ Gestión de Cajas</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">🛒 Gestión de Productos</h2>
 
         <!-- Botones de navegación -->
         <div class="flex justify-center gap-4 mb-8">
             <button @click="vistaActual = 'lista'"
                     :class="vistaActual === 'lista' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
                     class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                📋 Lista de Cajas
+                📋 Lista de Productos
             </button>
             <button @click="vistaActual = 'nueva'"
                     :class="vistaActual === 'nueva' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
                     class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                ➕ Nueva Caja
+                ➕ Nuevo Producto
             </button>
             <button @click="vistaActual = 'buscar'"
                     :class="vistaActual === 'buscar' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
                     class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                🔍 Buscar Caja
+                🔍 Buscar Producto
             </button>
         </div>
 
-        <!-- LISTA DE CAJAS -->
-        <div v-if="vistaActual === 'lista'">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📋 Lista de Cajas</h3>
-            <table class="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden">
-                <thead>
-                <tr class="bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white">
-                    <th class="py-3 px-5 text-left">📌 Número de Caja</th>
-                    <th class="py-3 px-5 text-left">🏷️ Nombre / Código</th>
-                    <th class="py-3 px-5 text-left">💵 Efectivo Disponible</th>
-                    <th class="py-3 px-5 text-left">📍 Estado de la Caja</th>
-                    <th class="py-3 px-5 text-center">⚙️ Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="caja in cajas" :key="caja.id" class="hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ caja.numero }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ caja.nombre }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600 text-green-500 font-bold">${{ caja.efectivo }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">
-                            <span :class="caja.estado === 'Activa' ? 'bg-green-500' : 'bg-red-500'"
-                                  class="text-white px-3 py-1 rounded-lg text-sm">
-                                {{ caja.estado }}
-                            </span>
-                    </td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600 text-center">
-                        <button @click="editarCaja(caja)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md mx-1">
-                            ✏️ Actualizar
-                        </button>
-                        <button @click="eliminarCaja(caja.id)"
-                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md mx-1">
-                            🗑️ Eliminar
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <!-- SECCIONES ADICIONALES -->
+        <div class="flex justify-center gap-4 mb-8">
+            <button @click="vistaActual = 'almacen'"
+                    class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
+                📦 Productos en Almacén
+            </button>
+            <button @click="vistaActual = 'masVendidos'"
+                    class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
+                🔥 Más Vendidos
+            </button>
+            <button @click="vistaActual = 'porCategoria'"
+                    class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
+                📂 Por Categoría
+            </button>
+            <button @click="vistaActual = 'porVencimiento'"
+                    class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
+                ⏳ Por Vencimiento
+            </button>
+            <button @click="vistaActual = 'stockMinimo'"
+                    class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
+                ⚠️ Stock Mínimo
+            </button>
         </div>
 
-        <!-- FORMULARIO PARA EDITAR UNA CAJA -->
-        <div v-if="vistaActual === 'editar'">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">✏️ Editar Caja</h3>
-            <form @submit.prevent="guardarEdicion" class="space-y-4 bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md">
-                <input v-model="cajaEditando.numero" type="text" placeholder="📌 Número de Caja"
-                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <input v-model="cajaEditando.nombre" type="text" placeholder="🏷️ Nombre / Código de Caja"
-                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <input v-model="cajaEditando.efectivo" type="number" placeholder="💵 Efectivo en Caja"
-                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <select v-model="cajaEditando.estado"
-                        class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                    <option value="Activa">✅ Activa</option>
-                    <option value="Inactiva">❌ Inactiva</option>
-                </select>
-                <button type="submit" class="mt-4 w-full bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition">
-                    Guardar Cambios
-                </button>
-            </form>
+        <!-- SECCIONES DINÁMICAS -->
+        <div v-if="vistaActual === 'almacen'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📦 Productos en Almacén</h3>
+            <p class="text-gray-700 dark:text-gray-300">Lista de todos los productos en almacén.</p>
+        </div>
+
+        <div v-if="vistaActual === 'masVendidos'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">🔥 Productos Más Vendidos</h3>
+            <p class="text-gray-700 dark:text-gray-300">Lista de productos con más ventas.</p>
+        </div>
+
+        <div v-if="vistaActual === 'porCategoria'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📂 Productos por Categoría</h3>
+            <p class="text-gray-700 dark:text-gray-300">Lista de productos organizados por categoría.</p>
+        </div>
+
+        <div v-if="vistaActual === 'porVencimiento'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">⏳ Productos por Vencimiento</h3>
+            <p class="text-gray-700 dark:text-gray-300">Lista de productos próximos a vencer.</p>
+        </div>
+
+        <div v-if="vistaActual === 'stockMinimo'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">⚠️ Productos en Stock Mínimo</h3>
+            <p class="text-gray-700 dark:text-gray-300">Lista de productos con bajo stock.</p>
         </div>
     </div>
 </template>

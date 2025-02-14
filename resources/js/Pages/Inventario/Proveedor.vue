@@ -2,107 +2,119 @@
 import { ref, computed } from 'vue';
 
 // Estado para controlar qué sección se muestra
-const vistaActual = ref('lista'); // 'lista', 'nueva', 'buscar', 'editar'
+const vistaActual = ref('lista'); // 'lista', 'nueva', 'buscar'
 
-// Estado de la lista de cajas
-const cajas = ref([
-    { id: 1, numero: '001', nombre: 'Caja Principal', efectivo: 1500, estado: 'Activa' },
-    { id: 2, numero: '002', nombre: 'Caja Secundaria', efectivo: 800, estado: 'Inactiva' }
+// Estado de la lista de proveedores
+const proveedores = ref([
+    { id: 1, documento: '12345678', nombre: 'Proveedor A', telefono: '555-1234', email: 'proveedorA@email.com', estado: 'Habilitado' },
+    { id: 2, documento: '87654321', nombre: 'Proveedor B', telefono: '555-5678', email: 'proveedorB@email.com', estado: 'No Habilitado' }
 ]);
 
-// Estado del formulario de nueva caja
-const nuevaCaja = ref({ numero: '', nombre: '', efectivo: '', estado: 'Activa' });
-
-// Estado para la búsqueda de cajas
-const busqueda = ref('');
-const cajaEncontrada = computed(() => {
-    return cajas.value.find(caja => caja.numero === busqueda.value);
+// Estado del formulario de nuevo proveedor
+const nuevoProveedor = ref({
+    documento: '',
+    nombre: '',
+    direccion: '',
+    estado: 'Habilitado',
+    encargado: '',
+    telefono: '',
+    email: ''
 });
 
-// Estado para manejar la edición de una caja
-const cajaEditando = ref(null);
+// Estado para la búsqueda de proveedores
+const busqueda = ref('');
+const proveedorEncontrado = computed(() => {
+    return proveedores.value.find(proveedor => proveedor.documento === busqueda.value);
+});
 
-// Función para seleccionar una caja y editarla
-const editarCaja = (caja) => {
-    cajaEditando.value = { ...caja }; // Copiar valores de la caja seleccionada
+// Estado para manejar la edición de un proveedor
+const proveedorEditando = ref(null);
+
+// Función para seleccionar un proveedor y editarlo
+const editarProveedor = (proveedor) => {
+    proveedorEditando.value = { ...proveedor };
     vistaActual.value = 'editar';
 };
 
-// Función para guardar los cambios en la caja editada
+// Función para guardar los cambios en el proveedor editado
 const guardarEdicion = () => {
-    const index = cajas.value.findIndex(c => c.id === cajaEditando.value.id);
+    const index = proveedores.value.findIndex(p => p.id === proveedorEditando.value.id);
     if (index !== -1) {
-        cajas.value[index] = { ...cajaEditando.value }; // Actualizar datos en la lista
+        proveedores.value[index] = { ...proveedorEditando.value };
     }
-    cajaEditando.value = null;
+    proveedorEditando.value = null;
     vistaActual.value = 'lista';
 };
 
-// Función para eliminar una caja
-const eliminarCaja = (id) => {
-    cajas.value = cajas.value.filter(caja => caja.id !== id);
+// Función para eliminar un proveedor
+const eliminarProveedor = (id) => {
+    proveedores.value = proveedores.value.filter(proveedor => proveedor.id !== id);
 };
 
-// Agregar nueva caja
-const agregarCaja = () => {
-    cajas.value.push({ id: cajas.value.length + 1, ...nuevaCaja.value });
-    nuevaCaja.value = { numero: '', nombre: '', efectivo: '', estado: 'Activa' };
+// Función para agregar un nuevo proveedor
+const agregarProveedor = () => {
+    proveedores.value.push({ id: proveedores.value.length + 1, ...nuevoProveedor.value });
+    nuevoProveedor.value = { documento: '', nombre: '', direccion: '', estado: 'Habilitado', encargado: '', telefono: '', email: '' };
     vistaActual.value = 'lista';
 };
 </script>
 
 <template>
     <div class="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">️ Gestión de Cajas</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">🏢 Gestión de Proveedores</h2>
 
         <!-- Botones de navegación -->
         <div class="flex justify-center gap-4 mb-8">
             <button @click="vistaActual = 'lista'"
                     :class="vistaActual === 'lista' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
                     class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                📋 Lista de Cajas
+                📋 Lista de Proveedores
             </button>
             <button @click="vistaActual = 'nueva'"
                     :class="vistaActual === 'nueva' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
                     class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                ➕ Nueva Caja
+                ➕ Nuevo Proveedor
             </button>
             <button @click="vistaActual = 'buscar'"
                     :class="vistaActual === 'buscar' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
                     class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                🔍 Buscar Caja
+                🔍 Buscar Proveedor
             </button>
         </div>
 
-        <!-- LISTA DE CAJAS -->
+        <!-- LISTA DE PROVEEDORES -->
         <div v-if="vistaActual === 'lista'">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📋 Lista de Cajas</h3>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📋 Lista de Proveedores</h3>
             <table class="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden">
                 <thead>
                 <tr class="bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white">
-                    <th class="py-3 px-5 text-left">📌 Número de Caja</th>
-                    <th class="py-3 px-5 text-left">🏷️ Nombre / Código</th>
-                    <th class="py-3 px-5 text-left">💵 Efectivo Disponible</th>
-                    <th class="py-3 px-5 text-left">📍 Estado de la Caja</th>
+                    <th class="py-3 px-5 text-left">#</th>
+                    <th class="py-3 px-5 text-left">📜 Documento</th>
+                    <th class="py-3 px-5 text-left">🏢 Nombre</th>
+                    <th class="py-3 px-5 text-left">📞 Teléfono</th>
+                    <th class="py-3 px-5 text-left">✉️ Email</th>
+                    <th class="py-3 px-5 text-left">📍 Estado</th>
                     <th class="py-3 px-5 text-center">⚙️ Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="caja in cajas" :key="caja.id" class="hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ caja.numero }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ caja.nombre }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600 text-green-500 font-bold">${{ caja.efectivo }}</td>
+                <tr v-for="proveedor in proveedores" :key="proveedor.id" class="hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ proveedor.id }}</td>
+                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ proveedor.documento }}</td>
+                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ proveedor.nombre }}</td>
+                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ proveedor.telefono }}</td>
+                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ proveedor.email }}</td>
                     <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">
-                            <span :class="caja.estado === 'Activa' ? 'bg-green-500' : 'bg-red-500'"
+                            <span :class="proveedor.estado === 'Habilitado' ? 'bg-green-500' : 'bg-red-500'"
                                   class="text-white px-3 py-1 rounded-lg text-sm">
-                                {{ caja.estado }}
+                                {{ proveedor.estado }}
                             </span>
                     </td>
                     <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600 text-center">
-                        <button @click="editarCaja(caja)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md mx-1">
+                        <button @click="editarProveedor(proveedor)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md mx-1">
                             ✏️ Actualizar
                         </button>
-                        <button @click="eliminarCaja(caja.id)"
+                        <button @click="eliminarProveedor(proveedor.id)"
                                 class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md mx-1">
                             🗑️ Eliminar
                         </button>
@@ -112,23 +124,20 @@ const agregarCaja = () => {
             </table>
         </div>
 
-        <!-- FORMULARIO PARA EDITAR UNA CAJA -->
-        <div v-if="vistaActual === 'editar'">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">✏️ Editar Caja</h3>
-            <form @submit.prevent="guardarEdicion" class="space-y-4 bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md">
-                <input v-model="cajaEditando.numero" type="text" placeholder="📌 Número de Caja"
+        <!-- FORMULARIO PARA NUEVO PROVEEDOR -->
+        <div v-if="vistaActual === 'nueva'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">➕ Agregar Nuevo Proveedor</h3>
+            <form @submit.prevent="agregarProveedor" class="space-y-4 bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md">
+                <input v-model="nuevoProveedor.documento" type="text" placeholder="📜 Número de Documentación"
                        class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <input v-model="cajaEditando.nombre" type="text" placeholder="🏷️ Nombre / Código de Caja"
+                <input v-model="nuevoProveedor.nombre" type="text" placeholder="🏢 Nombre"
                        class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <input v-model="cajaEditando.efectivo" type="number" placeholder="💵 Efectivo en Caja"
+                <input v-model="nuevoProveedor.direccion" type="text" placeholder="📍 Dirección"
                        class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <select v-model="cajaEditando.estado"
-                        class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                    <option value="Activa">✅ Activa</option>
-                    <option value="Inactiva">❌ Inactiva</option>
-                </select>
-                <button type="submit" class="mt-4 w-full bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition">
-                    Guardar Cambios
+                <input v-model="nuevoProveedor.telefono" type="text" placeholder="📞 Teléfono"
+                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
+                <button type="submit" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    Guardar Proveedor
                 </button>
             </form>
         </div>

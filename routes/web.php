@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\CajaController;
 
 // 🏠 Página de bienvenida
 Route::get('/', function () {
@@ -78,14 +79,12 @@ require __DIR__.'/auth.php';
 
 
 
-
-//Inventario
-
+// Inventario general
 Route::get('/inventario', function () {
     return Inertia::render('Inventario');
 })->name('inventario');
 
-
+// Submódulos del inventario
 Route::get('/inventario/Caja', function () {
     return Inertia::render('Inventario/Caja');
 })->name('inventario.Caja');
@@ -125,3 +124,10 @@ Route::get('/inventario/Devoluciones', function () {
 Route::get('/inventario/Compras', function () {
     return Inertia::render('Inventario/Compras');
 })->name('inventario.Compras');
+
+// Rutas para Caja utilizando el controlador CajaController
+Route::get('/inventario/Caja', [CajaController::class, 'index'])->name('inventario.Caja');
+Route::post('/inventario/Caja/store', [CajaController::class, 'store'])->name('inventario.Caja.store');
+Route::get('/inventario/Caja/{id}/edit', [CajaController::class, 'edit'])->name('inventario.Caja.edit');
+Route::put('/inventario/Caja/{id}/update', [CajaController::class, 'update'])->name('inventario.Caja.update');
+Route::delete('/inventario/Caja/{id}', [CajaController::class, 'destroy'])->name('inventario.Caja.destroy');
