@@ -109,7 +109,7 @@ const toggleSection = (section) => {
                     <ChevronRight v-else class="w-5 h-5" />
                 </div>
                 <div v-if="expandedSections.purchases" class="ml-6 flex flex-col gap-2">
-                    <router-link to="/compras/ordenes">🛒 Ordenes de Compra</router-link>
+                    <router-link to="/inventario/ordenes">🛒 Ordenes de Compra</router-link>
                     <router-link to="/compras/proveedores">🚚 Proveedores</router-link>
                     <router-link to="/compras/pagos">💳 Pagos</router-link>
                 </div>

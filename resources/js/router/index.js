@@ -16,6 +16,7 @@ import Productos from '@/Pages/Inventario/Productos.vue';
 import Proveedor from '@/Pages/Inventario/Proveedor.vue';
 import UsuariosInventario from '@/Pages/Inventario/Usuarios.vue';
 import Ventas from '@/Pages/Inventario/Ventas.vue';
+import Ordenes from '@/Pages/Inventario/Ordenes.vue';
 
 const routes = [
     {
@@ -88,6 +89,12 @@ const routes = [
         path: '/inventario/ventas',
         name: 'ventas',
         component: Ventas,
+    },
+
+    {
+        path: '/inventario/ordenes',
+        name: 'ordenes',
+        component: Ordenes,
     },
 ];
 

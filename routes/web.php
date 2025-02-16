@@ -14,6 +14,7 @@ use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\CajaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ComprasController;
+use App\Http\Controllers\OrdenCompraController;
 
 
 Route::get('/test-layout', function () {
@@ -148,5 +149,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/inventario/compras/destroy/{id}', [ComprasController::class, 'destroy']);
     Route::get('/inventario/compras/list', [ComprasController::class, 'list']);
 
-
+    Route::get('/ordenes-compra', [OrdenCompraController::class, 'index'])->name('ordenes_compra.index');
+    Route::get('/ordenes-compra/list', [OrdenCompraController::class, 'list']);
+    Route::post('/ordenes-compra/store', [OrdenCompraController::class, 'store']);
+    Route::put('/ordenes-compra/{id}/update', [OrdenCompraController::class, 'update']);
+    Route::delete('/ordenes-compra/{id}', [OrdenCompraController::class, 'destroy']);
 });
