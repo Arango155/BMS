@@ -37,6 +37,7 @@
         "vue-cal": "^4.10.2",
         "vue-chartjs": "^5.3.2",
         "vue-draggable-next": "^2.2.1",
+        "vue-router": "^4.5.0",
         "vue-toastification": "^2.0.0-rc.5"
     },
     "watch": "vite build --watch"

@@ -12,6 +12,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\CajaController;
+use App\Http\Controllers\CategoriaController;
+
+Route::get('/test-layout', function () {
+    return Inertia::render('AuthLayoutTest');
+})->name('test.layout');
+
+Route::get('/api/users', [UserController::class, 'getUsers']);
 
 // 🏠 Página de bienvenida
 Route::get('/', function () {
@@ -25,7 +32,6 @@ Route::get('/', function () {
 
 // 🔐 Grupo de rutas protegidas por autenticación y verificación de email
 Route::middleware(['auth', 'verified'])->group(function () {
-
     // 🚀 Onboarding (para usuarios que no han completado su perfil)
     Route::get('/onboarding', [OnboardingController::class, 'index'])->name('onboarding');
     Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
@@ -33,9 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // 🔹 Rutas protegidas con `onboarding.complete` (solo para usuarios que ya completaron onboarding)
     Route::middleware(['onboarding.complete'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/users', [UserController::class, 'index'])->name('users.index'); // ✅ Nueva ruta agregada
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/invite', [InvitationController::class, 'invite'])->name('invite.send');
-
     });
 
     // 👤 Gestión de perfil de usuario
@@ -69,26 +74,19 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-//Rutas para aceptar invitaciones
-
+// Rutas para aceptar invitaciones
 Route::get('/accept-invitation/{token}', [InvitationController::class, 'accept'])->name('invite.accept');
 Route::post('/register-invited', [InvitationController::class, 'registerInvitedUser'])->name('invite.register');
 
 // 🔄 Rutas de autenticación proporcionadas por Laravel Breeze/Fortify
 require __DIR__.'/auth.php';
 
-
-
-// Inventario general
+// 📦 Inventario general
 Route::get('/inventario', function () {
     return Inertia::render('Inventario');
 })->name('inventario');
 
-// Submódulos del inventario
-Route::get('/inventario/Caja', function () {
-    return Inertia::render('Inventario/Caja');
-})->name('inventario.Caja');
-
+// 📌 Submódulos del inventario
 Route::get('/inventario/Proveedor', function () {
     return Inertia::render('Inventario/Proveedor');
 })->name('inventario.Proveedor');
@@ -125,9 +123,20 @@ Route::get('/inventario/Compras', function () {
     return Inertia::render('Inventario/Compras');
 })->name('inventario.Compras');
 
-// Rutas para Caja utilizando el controlador CajaController
-Route::get('/inventario/Caja', [CajaController::class, 'index'])->name('inventario.Caja');
-Route::post('/inventario/Caja/store', [CajaController::class, 'store'])->name('inventario.Caja.store');
-Route::get('/inventario/Caja/{id}/edit', [CajaController::class, 'edit'])->name('inventario.Caja.edit');
-Route::put('/inventario/Caja/{id}/update', [CajaController::class, 'update'])->name('inventario.Caja.update');
-Route::delete('/inventario/Caja/{id}', [CajaController::class, 'destroy'])->name('inventario.Caja.destroy');
+// 📌 Rutas para Caja utilizando `CajaController`
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/inventario/caja', [CajaController::class, 'index'])->name('inventario.caja');
+    Route::post('/inventario/caja/store', [CajaController::class, 'store'])->name('inventario.caja.store');
+    Route::get('/inventario/caja/{id}/edit', [CajaController::class, 'edit'])->name('inventario.caja.edit');
+    Route::put('/inventario/caja/{id}/update', [CajaController::class, 'update'])->name('inventario.caja.update');
+    Route::delete('/inventario/caja/destroy/{id}', [CajaController::class, 'destroy']);
+    Route::get('/inventario/caja/list', [CajaController::class, 'list']);
+
+
+    Route::get('/inventario/categorias/list', [CategoriaController::class, 'list']);
+    Route::post('/inventario/categorias/store', [CategoriaController::class, 'store']);
+    Route::put('/inventario/categorias/{id}/update', [CategoriaController::class, 'update']);
+    Route::delete('/inventario/categorias/destroy/{id}', [CategoriaController::class, 'destroy']);
+
+
+});

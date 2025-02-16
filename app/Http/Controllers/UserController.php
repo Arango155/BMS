@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -9,16 +10,19 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::all();
-
         return Inertia::render('Users/Index', [
-            'users' => $users
+            'users' => User::latest()->get() // 🔥 Aseguramos que siempre envía usuarios
         ]);
+    }
+
+    public function getUsers()
+    {
+        return response()->json(['users' => User::latest()->get()]);
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('users.index');
+        return response()->json(['message' => 'Usuario eliminado correctamente.']);
     }
 }
