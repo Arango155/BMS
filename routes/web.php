@@ -166,4 +166,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/proveedores/{id}/update', [ProveedorController::class, 'update']);
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy']);
 
+
+    // 📦 Rutas para la gestión de Cajas
+    Route::get('/inventario/caja/list', [CajaController::class, 'list']);
+    Route::post('/inventario/caja/store', [CajaController::class, 'store']);
+    Route::put('/inventario/caja/{id}/update', [CajaController::class, 'update']);
+    Route::delete('/inventario/caja/{id}/destroy', [CajaController::class, 'destroy']);
+
+
 });

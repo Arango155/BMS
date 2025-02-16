@@ -4,19 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 
 class CajaController extends Controller
 {
-    public function index()
-    {
-        // Obtener todas las cajas del tenant
-        $cajas = DB::connection('tenant')->table('cajas')->latest()->get();
-
-        return Inertia::render('Inventario/Caja', ['cajas' => $cajas]);
-    }
-
     public function list()
     {
         try {
@@ -24,24 +15,23 @@ class CajaController extends Controller
             $cajas = DB::connection('tenant')->table('cajas')->latest()->get();
             return response()->json($cajas, 200);
         } catch (\Exception $e) {
+            Log::error('❌ Error al obtener las cajas:', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Error al obtener las cajas'], 500);
         }
     }
 
-
-
     public function store(Request $request)
     {
-        \Log::info('📌 Datos recibidos en store:', $request->all());
+        Log::info('📌 Datos recibidos en store:', $request->all());
 
         $request->validate([
-            'numero' => 'required|unique:cajas',
-            'nombre' => 'required',
+            'numero' => 'required|unique:cajas,numero',
+            'nombre' => 'required|string',
             'efectivo' => 'required|numeric',
-            'estado' => 'required',
+            'estado' => 'required|string',
         ]);
 
-        \Log::info('✅ Validación pasada.');
+        Log::info('✅ Validación pasada.');
 
         try {
             DB::connection('tenant')->table('cajas')->insert([
@@ -53,25 +43,23 @@ class CajaController extends Controller
                 'updated_at' => now(),
             ]);
 
-            \Log::info('✅ Caja guardada en la base de datos.');
-
+            Log::info('✅ Caja guardada en la base de datos.');
             return response()->json(['success' => 'Caja agregada correctamente'], 200);
         } catch (\Exception $e) {
-            \Log::error('❌ Error al guardar la caja:', ['error' => $e->getMessage()]);
+            Log::error('❌ Error al guardar la caja:', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Error al guardar la caja'], 500);
         }
     }
 
     public function update(Request $request, $id)
     {
-        \Log::info("📌 Datos recibidos para actualizar la caja con ID: {$id}", $request->all());
+        Log::info("📌 Datos recibidos para actualizar la caja con ID: {$id}", $request->all());
 
-        // Validación de los datos
         $request->validate([
-            'numero' => 'required|unique:cajas,numero,' . $id, // Permitir mismo número si es el mismo ID
-            'nombre' => 'required',
+            'numero' => 'required|unique:cajas,numero,' . $id,
+            'nombre' => 'required|string',
             'efectivo' => 'required|numeric',
-            'estado' => 'required',
+            'estado' => 'required|string',
         ]);
 
         try {
@@ -91,18 +79,22 @@ class CajaController extends Controller
                 'updated_at' => now(),
             ]);
 
-            \Log::info("✅ Caja con ID: {$id} actualizada correctamente.");
+            Log::info("✅ Caja con ID: {$id} actualizada correctamente.");
             return response()->json(['success' => 'Caja actualizada correctamente'], 200);
         } catch (\Exception $e) {
-            \Log::error('❌ Error al actualizar la caja:', ['error' => $e->getMessage()]);
+            Log::error('❌ Error al actualizar la caja:', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Error al actualizar la caja'], 500);
         }
     }
 
-
     public function destroy($id)
     {
-        DB::connection('tenant')->table('cajas')->where('id', $id)->delete();
-        return response()->json(['message' => 'Caja eliminada con éxito']);
+        try {
+            DB::connection('tenant')->table('cajas')->where('id', $id)->delete();
+            return response()->json(['message' => 'Caja eliminada con éxito'], 200);
+        } catch (\Exception $e) {
+            Log::error('❌ Error al eliminar la caja:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Error al eliminar la caja'], 500);
+        }
     }
 }
