@@ -1,100 +1,113 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-// 📌 Importamos las páginas principales
+// 📌 Import main pages
 import Dashboard from '@/Pages/Dash2.vue';
 import Users from '@/Pages/Users/Index.vue';
 import Profile from '@/Pages/Profile/Edit.vue';
 
-// 📌 Importamos todas las páginas del módulo de Inventario
-import Caja from '@/Pages/Inventario/Caja.vue';
-import Categorias from '@/Pages/Inventario/Categorias.vue';
-import Clientes from '@/Pages/Inventario/Clientes.vue';
-import Compras from '@/Pages/Inventario/Compras.vue';
-import Cotizaciones from '@/Pages/Inventario/Cotizaciones.vue';
-import Devoluciones from '@/Pages/Inventario/Devoluciones.vue';
-import Productos from '@/Pages/Inventario/Productos.vue';
-import Proveedor from '@/Pages/Inventario/Proveedor.vue';
-import UsuariosInventario from '@/Pages/Inventario/Usuarios.vue';
-import Ventas from '@/Pages/Inventario/Ventas.vue';
-import Ordenes from '@/Pages/Inventario/Ordenes.vue';
+// 📌 Import all pages from the Inventory module
+import CashBox from '@/Pages/Inventory/CashBox.vue';
+import Categories from '@/Pages/Inventory/Categories.vue';
+import Customers from '@/Pages/UM/Customers.vue';
+import Products from '@/Pages/Inventory/Products.vue';
+import Supplier from '@/Pages/Inventory/Supplier.vue';
+import InventoryUsers from '@/Pages/UM/Users.vue';
+import Sales from '@/Pages/Inventory/Sales.vue';
+
+// 📌 Import pages for Purchases and Orders
+import Purchases from '@/Pages/Purchases/Purchases.vue';
+import Orders from '@/Pages/Purchases/Orders.vue';
+
+// 📌 Import pages for Sales and Quotes
+import Quotes from '@/Pages/Sales/Quotes.vue';
+
+// 📌 Import pages for Returns
+import OrdenReturn from '@/Pages/Returns/OrdenReturn.vue';
 
 const routes = [
     {
         path: '/',
-        redirect: '/dashboard', // Redirige automáticamente a dashboard
+        redirect: '/dashboard', // Automatically redirects to the dashboard
     },
     {
         path: '/dashboard',
         name: 'dashboard',
-        component: Dashboard,  // Solo carga el componente Dashboard
-    },
-    {
-        path: '/users',
-        name: 'users',
-        component: Users,  // Solo carga el componente Users
+        component: Dashboard, // Loads only the Dashboard component
     },
     {
         path: '/profile',
         name: 'profile',
-        component: Profile,  // Solo carga el componente Profile
+        component: Profile, // Loads only the Profile component
     },
 
-    // 📌 Rutas del módulo de Inventario
+    // 📌 Users module routes
     {
-        path: '/inventario/caja',
-        name: 'caja',
-        component: Caja,
+        path: '/users',
+        name: 'users',
+        component: Users,
     },
     {
-        path: '/inventario/categorias',
-        name: 'categorias',
-        component: Categorias,
+        path: '/UM/customers',
+        name: 'customers',
+        component: Customers,
     },
     {
-        path: '/inventario/clientes',
-        name: 'clientes',
-        component: Clientes,
-    },
-    {
-        path: '/inventario/compras',
-        name: 'compras',
-        component: Compras,
-    },
-    {
-        path: '/inventario/cotizaciones',
-        name: 'cotizaciones',
-        component: Cotizaciones,
-    },
-    {
-        path: '/inventario/devoluciones',
-        name: 'devoluciones',
-        component: Devoluciones,
-    },
-    {
-        path: '/inventario/productos',
-        name: 'productos',
-        component: Productos,
-    },
-    {
-        path: '/inventario/proveedor',
-        name: 'proveedor',
-        component: Proveedor,
-    },
-    {
-        path: '/inventario/usuarios',
-        name: 'usuarios-inventario',
-        component: UsuariosInventario,
-    },
-    {
-        path: '/inventario/ventas',
-        name: 'ventas',
-        component: Ventas,
+        path: '/inventory/users',
+        name: 'inventory-users',
+        component: InventoryUsers,
     },
 
+    // 📌 Inventory module routes
     {
-        path: '/inventario/ordenes',
-        name: 'ordenes',
-        component: Ordenes,
+        path: '/inventory/cashbox',
+        name: 'cashbox',
+        component: CashBox,
+    },
+    {
+        path: '/inventory/categories',
+        name: 'categories',
+        component: Categories,
+    },
+    {
+        path: '/inventory/products',
+        name: 'products',
+        component: Products,
+    },
+    {
+        path: '/inventory/supplier',
+        name: 'supplier',
+        component: Supplier,
+    },
+    {
+        path: '/inventory/sales',
+        name: 'sales',
+        component: Sales,
+    },
+
+    // 📌 Purchases module routes
+    {
+        path: '/purchases/purchases',
+        name: 'purchases',
+        component: Purchases,
+    },
+    {
+        path: '/purchases/orders',
+        name: 'orders',
+        component: Orders,
+    },
+
+    // 📌 Sales module routes
+    {
+        path: '/sales/quotes',
+        name: 'quotes',
+        component: Quotes,
+    },
+
+    // 📌 Returns module routes
+    {
+        path: '/returns/ordenreturn',
+        name: 'ordenreturn',
+        component: OrdenReturn,
     },
 ];
 
