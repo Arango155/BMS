@@ -1,136 +1,161 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useToast } from 'vue-toastification';
 
-// Estado para controlar qué sección se muestra
-const vistaActual = ref('lista'); // 'lista', 'nueva', 'buscar', 'editar'
-
-// Estado de la lista de cajas
-const cajas = ref([
-    { id: 1, numero: '001', nombre: 'Caja Principal', efectivo: 1500, estado: 'Activa' },
-    { id: 2, numero: '002', nombre: 'Caja Secundaria', efectivo: 800, estado: 'Inactiva' }
-]);
-
-// Estado del formulario de nueva caja
-const nuevaCaja = ref({ numero: '', nombre: '', efectivo: '', estado: 'Activa' });
-
-// Estado para la búsqueda de cajas
-const busqueda = ref('');
-const cajaEncontrada = computed(() => {
-    return cajas.value.find(caja => caja.numero === busqueda.value);
+const toast = useToast();
+const vistaActual = ref('lista'); // Puede ser 'lista', 'nueva' o 'editar'
+const compras = ref([]);
+const form = ref({
+    id: null,
+    proveedor: '',
+    monto: '',
+    fecha: '',
+    estado: 'Pendiente'
 });
 
-// Estado para manejar la edición de una caja
-const cajaEditando = ref(null);
+// ✅ Cargar las compras desde el servidor
+const cargarCompras = async () => {
+    try {
+        const response = await axios.get('/inventario/compras/list');
+        compras.value = response.data;
+    } catch (error) {
+        console.error("Error al cargar las compras:", error);
+        toast.error('❌ Error al cargar las compras.', { timeout: 3000 });
+    }
+};
 
-// Función para seleccionar una caja y editarla
-const editarCaja = (caja) => {
-    cajaEditando.value = { ...caja }; // Copiar valores de la caja seleccionada
+// ✅ Llamar la función cuando el componente se monte
+onMounted(cargarCompras);
+
+// ✅ Función para agregar o actualizar una compra
+const guardarCompra = async () => {
+    try {
+        if (form.value.id) {
+            await axios.put(`/inventario/compras/${form.value.id}/update`, form.value);
+            toast.success('✅ Compra actualizada correctamente.', { timeout: 3000 });
+        } else {
+            await axios.post('/inventario/compras/store', form.value);
+            toast.success('✅ Compra agregada correctamente.', { timeout: 3000 });
+        }
+
+        // Recargar la lista y volver a la vista de lista
+        cargarCompras();
+        vistaActual.value = 'lista';
+
+        // Resetear el formulario
+        form.value = { id: null, proveedor: '', monto: '', fecha: '', estado: 'Pendiente' };
+    } catch (error) {
+        console.error("Error al guardar la compra:", error.response?.data);
+        toast.error('❌ Error al guardar la compra.', { timeout: 3000 });
+    }
+};
+
+// ✅ Función para cargar los datos en el formulario antes de editar
+const editarCompra = (compra) => {
+    form.value = { ...compra };
     vistaActual.value = 'editar';
 };
 
-// Función para guardar los cambios en la caja editada
-const guardarEdicion = () => {
-    const index = cajas.value.findIndex(c => c.id === cajaEditando.value.id);
-    if (index !== -1) {
-        cajas.value[index] = { ...cajaEditando.value }; // Actualizar datos en la lista
-    }
-    cajaEditando.value = null;
-    vistaActual.value = 'lista';
+// ✅ Función para cambiar a la vista de nueva compra
+const nuevaCompra = () => {
+    form.value = { id: null, proveedor: '', monto: '', fecha: '', estado: 'Pendiente' };
+    vistaActual.value = 'nueva';
 };
 
-// Función para eliminar una caja
-const eliminarCaja = (id) => {
-    cajas.value = cajas.value.filter(caja => caja.id !== id);
-};
-
-// Agregar nueva caja
-const agregarCaja = () => {
-    cajas.value.push({ id: cajas.value.length + 1, ...nuevaCaja.value });
-    nuevaCaja.value = { numero: '', nombre: '', efectivo: '', estado: 'Activa' };
-    vistaActual.value = 'lista';
+// ✅ Función para eliminar una compra con Swal minimalista
+const eliminarCompra = async (id) => {
+    Swal.fire({
+        title: "¿Eliminar Compra?",
+        text: "Esta acción no se puede deshacer.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+        buttonsStyling: false,
+        customClass: {
+            popup: 'rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800',
+            title: 'text-gray-900 dark:text-white text-lg font-semibold',
+            htmlContainer: 'text-gray-700 dark:text-gray-300 text-sm',
+            confirmButton: 'bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium',
+            cancelButton: 'bg-gray-300 dark:bg-gray-600 text-gray-900 dark:text-white px-4 py-2 rounded-lg font-medium ml-2'
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`/inventario/compras/destroy/${id}`);
+                toast.success('✅ Compra eliminada correctamente.', { timeout: 3000 });
+                cargarCompras();
+            } catch (error) {
+                console.error("Error al eliminar la compra:", error);
+                toast.error('❌ Error al eliminar la compra.', { timeout: 3000 });
+            }
+        }
+    });
 };
 </script>
 
 <template>
     <div class="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">️ Gestión de Cajas</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">📦 Gestión de Compras</h2>
 
-        <!-- Botones de navegación -->
         <div class="flex justify-center gap-4 mb-8">
-            <button @click="vistaActual = 'lista'"
-                    :class="vistaActual === 'lista' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
-                    class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                📋 Lista de Cajas
+            <button @click="vistaActual = 'lista'" class="px-5 py-3 rounded-lg shadow-md" :class="vistaActual === 'lista' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'">
+                📋 Lista de Compras
             </button>
-            <button @click="vistaActual = 'nueva'"
-                    :class="vistaActual === 'nueva' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
-                    class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                ➕ Nueva Caja
-            </button>
-            <button @click="vistaActual = 'buscar'"
-                    :class="vistaActual === 'buscar' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'"
-                    class="px-5 py-3 rounded-lg shadow-md hover:scale-105 transition-transform">
-                🔍 Buscar Caja
+            <button @click="nuevaCompra" class="px-5 py-3 rounded-lg shadow-md" :class="vistaActual === 'nueva' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'">
+                ➕ Nueva Compra
             </button>
         </div>
 
-        <!-- LISTA DE CAJAS -->
         <div v-if="vistaActual === 'lista'">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📋 Lista de Cajas</h3>
-            <table class="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">📋 Lista de Compras</h3>
+            <table class="w-full bg-white dark:bg-gray-700 rounded-lg shadow-md">
                 <thead>
                 <tr class="bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white">
-                    <th class="py-3 px-5 text-left">📌 Número de Caja</th>
-                    <th class="py-3 px-5 text-left">🏷️ Nombre / Código</th>
-                    <th class="py-3 px-5 text-left">💵 Efectivo Disponible</th>
-                    <th class="py-3 px-5 text-left">📍 Estado de la Caja</th>
-                    <th class="py-3 px-5 text-center">⚙️ Acciones</th>
+                    <th class="py-3 px-5 text-left">Proveedor</th>
+                    <th class="py-3 px-5 text-left">Monto</th>
+                    <th class="py-3 px-5 text-left">Fecha</th>
+                    <th class="py-3 px-5 text-left">Estado</th>
+                    <th class="py-3 px-5 text-center">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="caja in cajas" :key="caja.id" class="hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ caja.numero }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">{{ caja.nombre }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600 text-green-500 font-bold">${{ caja.efectivo }}</td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600">
-                            <span :class="caja.estado === 'Activa' ? 'bg-green-500' : 'bg-red-500'"
-                                  class="text-white px-3 py-1 rounded-lg text-sm">
-                                {{ caja.estado }}
-                            </span>
-                    </td>
-                    <td class="py-3 px-5 border-b border-gray-300 dark:border-gray-600 text-center">
-                        <button @click="editarCaja(caja)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md mx-1">
-                            ✏️ Actualizar
-                        </button>
-                        <button @click="eliminarCaja(caja.id)"
-                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md mx-1">
-                            🗑️ Eliminar
-                        </button>
+                <tr v-for="compra in compras" :key="compra.id" class="hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <td class="py-3 px-5">{{ compra.proveedor }}</td>
+                    <td class="py-3 px-5">${{ compra.monto }}</td>
+                    <td class="py-3 px-5">{{ compra.fecha }}</td>
+                    <td class="py-3 px-5">{{ compra.estado }}</td>
+                    <td class="py-3 px-5 text-center">
+                        <button @click="editarCompra(compra)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md mx-1">✏️ Editar</button>
+                        <button @click="eliminarCompra(compra.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md mx-1">🗑️ Eliminar</button>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- FORMULARIO PARA EDITAR UNA CAJA -->
-        <div v-if="vistaActual === 'editar'">
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">✏️ Editar Caja</h3>
-            <form @submit.prevent="guardarEdicion" class="space-y-4 bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md">
-                <input v-model="cajaEditando.numero" type="text" placeholder="📌 Número de Caja"
-                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <input v-model="cajaEditando.nombre" type="text" placeholder="🏷️ Nombre / Código de Caja"
-                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <input v-model="cajaEditando.efectivo" type="number" placeholder="💵 Efectivo en Caja"
-                       class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                <select v-model="cajaEditando.estado"
-                        class="p-3 border rounded-lg w-full bg-gray-100 dark:bg-gray-800 dark:text-white">
-                    <option value="Activa">✅ Activa</option>
-                    <option value="Inactiva">❌ Inactiva</option>
+        <!-- FORMULARIO PARA AGREGAR / EDITAR COMPRA -->
+        <div v-if="vistaActual === 'nueva' || vistaActual === 'editar'">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                {{ form.id ? '✏️ Editar' : '➕ Agregar' }} Compra
+            </h3>
+            <form @submit.prevent="guardarCompra" class="space-y-4 bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md">
+                <input v-model="form.proveedor" type="text" placeholder="🏷️ Proveedor" class="w-full p-3 border rounded-md">
+                <input v-model="form.monto" type="number" placeholder="💰 Monto" class="w-full p-3 border rounded-md">
+                <input v-model="form.fecha" type="date" class="w-full p-3 border rounded-md">
+                <select v-model="form.estado" class="w-full p-3 border rounded-md">
+                    <option value="Pendiente">⏳ Pendiente</option>
+                    <option value="Completado">✅ Completado</option>
+                    <option value="Cancelado">❌ Cancelado</option>
                 </select>
-                <button type="submit" class="mt-4 w-full bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition">
-                    Guardar Cambios
+                <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md">
+                    {{ form.id ? 'Guardar Cambios' : 'Guardar' }}
                 </button>
             </form>
         </div>
+
     </div>
 </template>

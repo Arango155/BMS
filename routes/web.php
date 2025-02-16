@@ -13,6 +13,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\CajaController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\ComprasController;
+
 
 Route::get('/test-layout', function () {
     return Inertia::render('AuthLayoutTest');
@@ -137,6 +139,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/inventario/categorias/store', [CategoriaController::class, 'store']);
     Route::put('/inventario/categorias/{id}/update', [CategoriaController::class, 'update']);
     Route::delete('/inventario/categorias/destroy/{id}', [CategoriaController::class, 'destroy']);
+
+
+    Route::get('/inventario/compras', [ComprasController::class, 'index'])->name('inventario.compras');
+    Route::post('/inventario/compras/store', [ComprasController::class, 'store'])->name('inventario.compras.store');
+    Route::get('/inventario/compras/{id}/edit', [ComprasController::class, 'edit'])->name('inventario.compras.edit');
+    Route::put('/inventario/compras/{id}/update', [ComprasController::class, 'update'])->name('inventario.compras.update');
+    Route::delete('/inventario/compras/destroy/{id}', [ComprasController::class, 'destroy']);
+    Route::get('/inventario/compras/list', [ComprasController::class, 'list']);
 
 
 });
