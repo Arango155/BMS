@@ -110,7 +110,7 @@ const toggleSection = (section) => {
                 </div>
                 <div v-if="expandedSections.purchases" class="ml-6 flex flex-col gap-2">
                     <router-link to="/inventario/ordenes">🛒 Ordenes de Compra</router-link>
-                    <router-link to="/compras/proveedores">🚚 Proveedores</router-link>
+                    <router-link to="/inventario/proveedor">🚚 Proveedores</router-link>
                     <router-link to="/compras/pagos">💳 Pagos</router-link>
                 </div>
 

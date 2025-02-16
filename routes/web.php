@@ -15,6 +15,7 @@ use App\Http\Controllers\CajaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\OrdenCompraController;
+use App\Http\Controllers\ProveedorController;
 
 
 Route::get('/test-layout', function () {
@@ -154,4 +155,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/ordenes-compra/store', [OrdenCompraController::class, 'store']);
     Route::put('/ordenes-compra/{id}/update', [OrdenCompraController::class, 'update']);
     Route::delete('/ordenes-compra/{id}', [OrdenCompraController::class, 'destroy']);
+
+
+    Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
+    Route::get('/proveedores/list', [ProveedorController::class, 'list']);
+    Route::post('/proveedores/store', [ProveedorController::class, 'store']);
+    Route::put('/proveedores/{id}/update', [ProveedorController::class, 'update']);
+    Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy']);
+
 });
