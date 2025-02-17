@@ -27,7 +27,7 @@ const profile = computed(() => page.props.profile);
 const showInviteModal = ref(false);
 const toast = useToast();
 
-// ✅ Force Dark Mode on Mount
+// ✅ Modo oscuro con persistencia
 const isDarkMode = useDark({
     selector: 'html',
     attribute: 'class',
@@ -36,9 +36,11 @@ const isDarkMode = useDark({
     storageKey: 'darkModePreference',
 });
 
-// ✅ Ensure Dark Mode is Applied Correctly
+
+
+// ✅ Asegurar que el tema se aplique correctamente sin forzar
 onMounted(() => {
-    isDarkMode.value = true; // Force dark mode
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
 });
 
 watchEffect(() => {

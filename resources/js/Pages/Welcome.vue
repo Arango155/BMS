@@ -1,30 +1,13 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed, watchEffect } from 'vue';
-import { useDark } from '@vueuse/core';
+import { useDarkMode } from '@/utils/theme'; // Importa la función para manejar el modo oscuro
 import Footer from "@/components/Footer.vue";
 import { Moon, Sun, Bell } from 'lucide-vue-next';
 
-// 📌 Modo oscuro con persistencia en LocalStorage
-const isDarkMode = useDark({
-    selector: 'html',
-    attribute: 'class',
-    valueDark: 'dark',
-    valueLight: 'light',
-    storageKey: 'darkModePreference',
-});
+const { isDarkMode, toggleDarkMode } = useDarkMode();
 
-// 📌 Alternar modo oscuro
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-};
-
-// 📌 Aplicar el modo oscuro al iniciar
-watchEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode.value);
-});
-
-// Estado reactivo para controlar la visibilidad del menú
+// Estado reactivo para el menú y la pestaña activa
 const isMenuOpen = ref(false);
 const activeTab = ref('modules'); // Activa la pestaña de Modules por defecto
 
@@ -35,7 +18,7 @@ const props = defineProps({
     phpVersion: String,
 });
 
-// 📌 ERP Modules with Emojis
+// 📌 ERP Modules
 const modules = [
     { icon: '🛒', title: 'Procurement', description: 'Manages purchasing processes, supplier relationships, and procurement workflows.' },
     { icon: '💰', title: 'Finance & Accounting', description: 'Handles financial transactions, reporting, budgeting, and compliance.' },
@@ -49,32 +32,18 @@ const modules = [
     { icon: '🏦', title: 'Banking & Treasury', description: 'Integrates financial transactions, bank reconciliations, and cash flow management.' },
     { icon: '📊', title: 'Business Intelligence (BI)', description: 'Provides analytics, dashboards, and data-driven decision-making tools.' },
     { icon: '🔒', title: 'Security & Compliance', description: 'Ensures regulatory compliance, role-based access, and encryption measures.' },
-    { icon: '🎁', title: 'Payroll & Benefits', description: 'Automates payroll processing, tax deductions, and employee benefits management.' },
-    { icon: '🔗', title: 'Third-Party Integrations', description: 'Seamlessly connects with external software, APIs, and cloud platforms.' },
-    { icon: '📆', title: 'Project Management', description: 'Supports task assignments, deadlines, and collaboration tools for teams.' },
-    { icon: '📝', title: 'Document Management', description: 'Centralized storage for invoices, contracts, and other business documents.' },
 ];
 
-// 📌 ERP Features with Emojis
+// 📌 ERP Features
 const features = [
     { icon: '📡', title: 'Cloud-Based Access', description: 'Work from anywhere with real-time data updates in the cloud.' },
     { icon: '🤖', title: 'AI & Automation', description: 'Automates repetitive tasks, predictive analytics, and smart workflows.' },
     { icon: '⚙️', title: 'Customizable Workflows', description: 'Adapt the ERP to fit your business processes and rules.' },
-    { icon: '📡', title: 'Multi-Company Support', description: 'Manage multiple business units with separate accounting and reporting.' },
     { icon: '📊', title: 'Real-Time Reporting', description: 'Generate instant financial reports, sales forecasts, and KPI dashboards.' },
     { icon: '🔄', title: 'Automated Updates', description: 'Keep your system up to date with the latest features and security patches.' },
-    { icon: '🌍', title: 'Multi-Currency & Multi-Language', description: 'Supports global operations with flexible currency and language settings.' },
-    { icon: '🔍', title: 'Advanced Search & Filtering', description: 'Easily find records, transactions, and reports with smart search functions.' },
-    { icon: '📡', title: 'IoT & Smart Devices', description: 'Connect ERP with smart warehouses, IoT sensors, and automated tracking.' },
-    { icon: '🔐', title: 'Enterprise-Grade Security', description: 'Data encryption, multi-factor authentication, and secure access controls.' },
-    { icon: '⚡', title: 'Fast Performance', description: 'Optimized database queries, caching, and cloud acceleration.' },
-    { icon: '🎯', title: 'User-Friendly Interface', description: 'Simple and intuitive design for a seamless user experience.' },
-    { icon: '📥', title: 'Import & Export Tools', description: 'Easily migrate data between systems or generate reports in various formats.' },
-    { icon: '🕵️‍♂️', title: 'Audit Trails & Logs', description: 'Track every change in the system for compliance and security.' },
-    { icon: '📌', title: 'Task & Workflow Automation', description: 'Reduces manual work by automating business processes and approvals.' },
 ];
 
-const currentSkills = ref(modules); // Inicia con Modules
+const currentSkills = ref(modules);
 
 // 📌 Funciones para cambiar entre Modules y Features
 const showModules = () => {
@@ -86,7 +55,6 @@ const showFeatures = () => {
     currentSkills.value = features;
 };
 </script>
-
 
 <template>
     <div class="min-h-screen bg-gray-100 dark:bg-[#1a1c2c]">
@@ -138,23 +106,13 @@ const showFeatures = () => {
         <!-- Main Content -->
         <main class="p-6">
             <div class="text-center mt-6">
-                <button
-                    @click="showModules"
-                    :class="['btn', activeTab === 'modules' ? 'btn-primary' : 'btn-light']"
-                >
-                    Modules
-                </button>
-                <button
-                    @click="showFeatures"
-                    :class="['btn', 'ml-4', activeTab === 'features' ? 'btn-primary' : 'btn-light']"
-                >
-                    Features
-                </button>
+                <button @click="showModules" :class="['btn', activeTab === 'modules' ? 'btn-primary' : 'btn-light']">Modules</button>
+                <button @click="showFeatures" :class="['btn', 'ml-4', activeTab === 'features' ? 'btn-primary' : 'btn-light']">Features</button>
             </div>
 
             <div id="codingskills" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
                 <div class="card dark:bg-[#22243a] dark:border-gray-700" v-for="skill in currentSkills" :key="skill.title">
-                    <span >{{ skill.icon }}</span>
+                    <span>{{ skill.icon }}</span>
                     <span class="font-bold">{{ skill.title }}</span>
                     <p>{{ skill.description }}</p>
                 </div>
@@ -165,9 +123,7 @@ const showFeatures = () => {
     </div>
 </template>
 
-
 <style scoped>
-/* Estilos forzados con !important */
 button.bg-blue-500 {
     transition: all 0.3s ease-in-out !important;
 }

@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* === 🎭 LABELS === */
+label {
+    display: block;
+    font-weight: 600;
+    color: var(--label-color);
+    margin-bottom: 5px;
+}
+
+/* === 📝 INPUTS & TEXTAREAS === */
+.input input,
+.input textarea,
+.input select {
+    border-radius: 8px;
+    padding: 12px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    color: var(--text-primary);
+    transition: all 0.3s ease-in-out;
+}
+
+.input input:focus,
+.input textarea:focus,
+.input select:focus {
+    border-color: var(--button-bg);
+    outline: none;
+    box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+}
+
+.dark .input input,
+.dark .input textarea,
+.dark .input select {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+
 /* 🌞 Light Mode (Default) */
 body {
     --text-primary: #111827 !important; /* Dark text */

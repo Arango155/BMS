@@ -1,47 +1,28 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { usePage } from '@inertiajs/vue3';
-import {
-    Home, Users, Package, ShoppingCart, DollarSign, FileText, Briefcase, Clipboard,
-    Settings, ChevronDown, ChevronRight, Bell, Moon, Sun, LogOut, Scale, Library, Banknote
-} from 'lucide-vue-next';
+
+
 
 // 📌 Obtener datos del usuario desde Inertia.js
 const page = usePage();
 const user = computed(() => page.props.auth?.user ?? { name: 'User' });
 const profile = computed(() => page.props.profile ?? { dashboard_name: 'BMS Management System' });
 
-// 📌 Verificar localStorage y usar modo claro por defecto
-const storedPreference = localStorage.getItem('darkModePreference');
-const isDarkMode = ref(storedPreference ? storedPreference === 'true' : false);
+
+import Dropdown from '@/Components/Dropdown.vue';
 
 
-// 📌 Función para aplicar el tema
-const applyTheme = () => {
-    if (isDarkMode.value) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-};
+import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { useDarkMode } from '@/utils/theme'; // Importa la función
+import {
+    Home, Users, Package, ShoppingCart, DollarSign, FileText, Briefcase,
+    Settings, ChevronDown, ChevronRight, Bell, Moon, Sun, LogOut, Banknote
+} from 'lucide-vue-next';
 
-// 📌 Aplicar la configuración cuando el componente se monte
-onMounted(() => {
-    if (storedPreference === null) {
-        localStorage.setItem('darkModePreference', 'false'); // Asegurar que la primera vez inicie en modo claro
-    }
-    applyTheme();
-});
+// 📌 Modo oscuro
+const { isDarkMode, toggleDarkMode } = useDarkMode();
 
 
-// 📌 Alternar modo oscuro manualmente y guardar preferencia
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    localStorage.setItem('darkModePreference', isDarkMode.value);
-    applyTheme();
-};
-
-// 📌 Estado de secciones expandibles en la barra lateral
 const expandedSections = ref({
     inventory: false,
     sales: false,
@@ -54,23 +35,17 @@ const expandedSections = ref({
     crm: false
 });
 
-// 📌 Función para abrir/cerrar secciones del sidebar
 const toggleSection = (section) => {
     expandedSections.value[section] = !expandedSections.value[section];
 };
 </script>
 
-
-
-
-
 <template>
     <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
-        <!-- Sidebar -->
         <aside class="w-72 p-4 border-r border-gray-200 dark:border-gray-700 min-h-screen">
             <a href="/">  <div class="flex items-center space-x-2 p-4">
                 <ApplicationLogo class="w-10 h-10" />
-                 <span class="text-xl font-bold">BMS ERP</span>
+                <span class="text-xl font-bold">BMS ERP</span>
             </div></a>
 
             <nav class="flex flex-col gap-2 mt-4">
@@ -204,6 +179,7 @@ const toggleSection = (section) => {
             </nav>
         </aside>
 
+
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <!-- Head Section -->
@@ -229,7 +205,7 @@ const toggleSection = (section) => {
                     <Dropdown align="right" width="48">
                         <template #trigger>
                             <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md focus:outline-none transition">
-                            {{ user?.name || 'User' }}
+                                {{ user?.name || 'User' }}
                                 <ChevronDown class="w-4 h-4 ml-2" />
                             </button>
                         </template>
@@ -261,4 +237,5 @@ const toggleSection = (section) => {
             </main>
         </div>
     </div>
+    <Footer></Footer>
 </template>
