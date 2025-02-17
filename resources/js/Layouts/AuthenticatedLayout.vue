@@ -1,19 +1,47 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
 import {
     Home, Users, Package, ShoppingCart, DollarSign, FileText, Briefcase, Clipboard,
     Settings, ChevronDown, ChevronRight, Bell, Moon, Sun, LogOut, Scale, Library, Banknote
 } from 'lucide-vue-next';
 
+// 📌 Obtener datos del usuario desde Inertia.js
 const page = usePage();
-const user = computed(() => page.props.auth?.user || {});
-const profile = computed(() => page.props.profile || {});
+const user = computed(() => page.props.auth?.user ?? { name: 'User' });
+const profile = computed(() => page.props.profile ?? { dashboard_name: 'BMS Management System' });
 
-// Expandable sections state
+// 📌 Verificar localStorage y usar modo claro por defecto
+const storedPreference = localStorage.getItem('darkModePreference');
+const isDarkMode = ref(storedPreference ? storedPreference === 'true' : false);
+
+
+// 📌 Función para aplicar el tema
+const applyTheme = () => {
+    if (isDarkMode.value) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+};
+
+// 📌 Aplicar la configuración cuando el componente se monte
+onMounted(() => {
+    if (storedPreference === null) {
+        localStorage.setItem('darkModePreference', 'false'); // Asegurar que la primera vez inicie en modo claro
+    }
+    applyTheme();
+});
+
+
+// 📌 Alternar modo oscuro manualmente y guardar preferencia
+const toggleDarkMode = () => {
+    isDarkMode.value = !isDarkMode.value;
+    localStorage.setItem('darkModePreference', isDarkMode.value);
+    applyTheme();
+};
+
+// 📌 Estado de secciones expandibles en la barra lateral
 const expandedSections = ref({
     inventory: false,
     sales: false,
@@ -26,27 +54,24 @@ const expandedSections = ref({
     crm: false
 });
 
-// Toggle dark mode
-const isDarkMode = ref(false);
-const toggleDarkMode = () => {
-    isDarkMode.value = !isDarkMode.value;
-    document.documentElement.classList.toggle('dark', isDarkMode.value);
-};
-
-// Expand/collapse sidebar sections
+// 📌 Función para abrir/cerrar secciones del sidebar
 const toggleSection = (section) => {
     expandedSections.value[section] = !expandedSections.value[section];
 };
 </script>
 
+
+
+
+
 <template>
     <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
         <!-- Sidebar -->
-        <aside class="w-72 bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-4 border-r border-gray-200 dark:border-gray-700 min-h-screen">
-            <div class="flex items-center space-x-2 p-4">
+        <aside class="w-72 p-4 border-r border-gray-200 dark:border-gray-700 min-h-screen">
+            <a href="/">  <div class="flex items-center space-x-2 p-4">
                 <ApplicationLogo class="w-10 h-10" />
-                <span class="text-xl font-bold">BMS ERP</span>
-            </div>
+                 <span class="text-xl font-bold">BMS ERP</span>
+            </div></a>
 
             <nav class="flex flex-col gap-2 mt-4">
                 <router-link to="/dashboard" class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition">
@@ -182,13 +207,16 @@ const toggleSection = (section) => {
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <!-- Head Section -->
-            <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 p-4 flex justify-between items-center">
+            <nav class="p-4 flex justify-between items-center">
                 <div class="text-lg font-bold">{{ profile.dashboard_name || 'BMS Management System' }}</div>
 
                 <div class="flex items-center gap-4">
                     <!-- Dark Mode Toggle -->
-                    <button @click="toggleDarkMode" class="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        <Moon v-if="!isDarkMode" class="w-5 h-5" />
+                    <button
+                        @click="toggleDarkMode"
+                        class="p-2 rounded-full transition-all duration-300 ease-in-out bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 shadow-md shadow-gray-400 dark:shadow-gray-900"
+                    >
+                        <Moon v-if="!isDarkMode" class="w-5 h-5 text-gray-700" />
                         <Sun v-else class="w-5 h-5 text-yellow-400" />
                     </button>
 
@@ -200,17 +228,30 @@ const toggleSection = (section) => {
                     <!-- User Dropdown -->
                     <Dropdown align="right" width="48">
                         <template #trigger>
-                            <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition">
-                                {{ user?.name || 'User' }}
+                            <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md focus:outline-none transition">
+                            {{ user?.name || 'User' }}
                                 <ChevronDown class="w-4 h-4 ml-2" />
                             </button>
                         </template>
                         <template #content>
-                            <router-link to="/profile">Profile</router-link>
-                            <DropdownLink :href="route('logout')" method="post" as="button">
-                                <LogOut class="w-5 h-5 mr-2" /> Logout
-                            </DropdownLink>
+                            <div class="shadow-md rounded-md p-2 w-48">
+                                <router-link
+                                    to="/profile"
+                                    class="block px-4 py-2 rounded-md transition">
+                                    👤 Profile
+                                </router-link>
+
+                                <DropdownLink
+                                    :href="route('logout')"
+                                    method="post"
+                                    as="button"
+                                    class="flex items-center w-full px-4 py-2 text-left rounded-md transition">
+                                    <LogOut class="w-5 h-5 mr-2" /> Logout
+                                </DropdownLink>
+                            </div>
                         </template>
+
+
                     </Dropdown>
                 </div>
             </nav>

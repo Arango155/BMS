@@ -1,88 +1,106 @@
 <template>
-
-    <footer class="bg-gray-50 text-black p-6 mt-6 flex flex-wrap justify-between text-sm">
-        <div class="flex flex-col items-start">
-            <div class="flex items-center gap-2">
-                <img src="https://cdn-icons-png.flaticon.com/256/4951/4951200.png" alt="BMS Logo" class="h-8">
-                <span class="text-lg font-semibold">BMS</span>
-            </div>
-            <ul class="mt-2">
-                <li><a href="#" class="hover:text-gray-600"> Home</a></li>
-                <li><a href="#" class="hover:text-gray-600"> Services</a></li>
-                <li><a href="#" class="hover:text-gray-600"> About Us</a></li>
-                <li><a href="#" class="hover:text-gray-600"> Open Source</a></li>
-            </ul>
-            <div class="flex gap-4 mt-2">
-                <a href="#" class="hover:text-gray-600">📘</a>
-                <a href="#" class="hover:text-gray-600">🐦</a>
-                <a href="#" class="hover:text-gray-600">🔗</a>
-                <a href="#" class="hover:text-gray-600">📸</a>
-            </div>
-        </div>
-
-        <div class="flex flex-wrap gap-8 mt-4">
-            <div>
-                <h3 class="text-lg font-semibold">🏢 Company</h3>
-                <ul>
-                    <li><a href="#" class="hover:text-gray-600"> About us</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Careers</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Security</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Status</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Terms & privacy</a></li>
+    <footer
+        class="w-full p-6 mt-6 bg-gray-50 text-black dark:bg-gray-900 dark:text-white transition-all duration-300 !important">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 !important">
+            <!-- Logo y enlaces principales -->
+            <div class="flex flex-col items-start !important">
+                <div class="flex items-center gap-2 !important">
+                    <img src="https://cdn-icons-png.flaticon.com/256/4951/4951200.png" alt="BMS Logo"
+                         class="h-8 dark:brightness-90 !important">
+                    <span class="text-lg font-semibold !important">BMS</span>
+                </div>
+                <ul class="mt-2 space-y-1 !important">
+                    <li v-for="link in mainLinks" :key="link.text">
+                        <a :href="link.href"
+                           class="hover:text-gray-600 dark:hover:text-gray-400 transition !important">
+                            {{ link.text }}
+                        </a>
+                    </li>
                 </ul>
+                <!-- Redes Sociales -->
+                <div class="flex gap-4 mt-3 text-lg !important">
+                    <a v-for="social in socialLinks" :key="social.icon" :href="social.href"
+                       class="hover:text-gray-600 dark:hover:text-gray-400 transition !important">
+                        {{ social.icon }}
+                    </a>
+                </div>
             </div>
 
-            <div>
-                <h3 class="text-lg font-semibold">📚 Resources</h3>
-                <ul>
-                    <li><a href="#" class="hover:text-gray-600"> Help center</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Pricing</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Blog</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Community</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Integrations</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Templates</a></li>
-                    <li><a href="#" class="hover:text-gray-600"> Affiliates</a></li>
+            <!-- Secciones Dinámicas -->
+            <div v-for="section in sections" :key="section.title">
+                <h3 class="text-lg font-semibold !important">{{ section.title }}</h3>
+                <ul class="mt-2 space-y-1 !important">
+                    <li v-for="link in section.links" :key="link.text">
+                        <a :href="link.href"
+                           class="hover:text-gray-600 dark:hover:text-gray-400 transition !important">
+                            {{ link.text }}
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
 
-        <div class="mt-4 text-right">
-            <p class="text-sm"> Do Not Sell or Share My Info | <a href="#" class="hover:text-gray-600"> Cookie settings</a></p>
-            <a href="#" class="hover:text-gray-600 text-lg font-semibold">🌎 Explore more →</a>
+        <!-- Parte inferior -->
+        <div class="mt-6 text-center text-sm border-t pt-4 border-gray-300 dark:border-gray-700 !important">
+            <p>© {{ year }} BMS. All rights reserved.</p>
+            <p class="mt-1">
+                <a href="#" class="hover:text-gray-600 dark:hover:text-gray-400 transition !important">
+                    Do Not Sell My Info
+                </a>
+                |
+                <a href="#" class="hover:text-gray-600 dark:hover:text-gray-400 transition !important">
+                    Cookie Settings
+                </a>
+            </p>
         </div>
     </footer>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            year: new Date().getFullYear(),
-        };
-    },
-};
-</script>
+<script setup>
+import { ref } from "vue";
 
-<style scoped>
-footer {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-start;
-    font-family: "Inter", sans-serif;
-}
-footer:hover {
-    cursor: pointer;
-}
-footer a {
-    text-decoration: none;
-    color: inherit;
-}
-footer .hover\:text-gray-600:hover {
-    color: #4b5563;
-}
-hr {
-    border-top: 1px solid #d1d5db;
-}
-</style>
+// Año dinámico
+const year = ref(new Date().getFullYear());
+
+// Links principales
+const mainLinks = ref([
+    { text: "Home", href: "#" },
+    { text: "Services", href: "#" },
+    { text: "About Us", href: "#" },
+    { text: "Open Source", href: "#" },
+]);
+
+// Redes sociales
+const socialLinks = ref([
+    { icon: "📘", href: "#" }, // Facebook
+    { icon: "🐦", href: "#" }, // Twitter
+    { icon: "🔗", href: "#" }, // LinkedIn
+    { icon: "📸", href: "#" }, // Instagram
+]);
+
+// Secciones dinámicas
+const sections = ref([
+    {
+        title: "🏢 Company",
+        links: [
+            { text: "About us", href: "#" },
+            { text: "Careers", href: "#" },
+            { text: "Security", href: "#" },
+            { text: "Status", href: "#" },
+            { text: "Terms & Privacy", href: "#" },
+        ],
+    },
+    {
+        title: "📚 Resources",
+        links: [
+            { text: "Help center", href: "#" },
+            { text: "Pricing", href: "#" },
+            { text: "Blog", href: "#" },
+            { text: "Community", href: "#" },
+            { text: "Integrations", href: "#" },
+            { text: "Templates", href: "#" },
+            { text: "Affiliates", href: "#" },
+        ],
+    },
+]);
+</script>

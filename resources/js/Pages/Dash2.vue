@@ -1,7 +1,8 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, watchEffect } from 'vue';
 import { useForm, Head, usePage } from '@inertiajs/vue3';
 import { useToast } from 'vue-toastification';
+import { useDark } from '@vueuse/core';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -11,12 +12,13 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import CustomCard from '@/Components/CustomCard.vue';
 import TiptapEditor from '@/Components/TiptapEditor.vue';
 import DraggableBoard from '@/Components/DraggableBoard.vue';
-import { Plus, Bell, MessageCircle, Users, BarChart2 } from 'lucide-vue-next';
+import { Plus } from 'lucide-vue-next';
 import { Doughnut, Bar } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
 
+// Register Chart.js elements
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 const page = usePage();
@@ -24,6 +26,24 @@ const user = computed(() => page.props.auth?.user);
 const profile = computed(() => page.props.profile);
 const showInviteModal = ref(false);
 const toast = useToast();
+
+// ✅ Force Dark Mode on Mount
+const isDarkMode = useDark({
+    selector: 'html',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: 'light',
+    storageKey: 'darkModePreference',
+});
+
+// ✅ Ensure Dark Mode is Applied Correctly
+onMounted(() => {
+    isDarkMode.value = true; // Force dark mode
+});
+
+watchEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode.value);
+});
 
 const form = useForm({
     email: '',
@@ -43,6 +63,7 @@ const sendInvitation = () => {
     });
 };
 
+// ✅ Chart Data
 const chartData = {
     labels: ['Sales', 'Users', 'Tasks'],
     datasets: [
@@ -65,12 +86,13 @@ const barChartData = {
 };
 </script>
 
+
 <template>
     <Head title="Dashboard" />
 
     <Modal :show="showInviteModal" @close="showInviteModal = false">
         <div class="p-6">
-            <h2 class="text-lg font-semibold mb-4">Invite User</h2>
+            <h1 class="text-lg font-semibold mb-4">Invite User</h1>
             <form @submit.prevent="sendInvitation">
                 <div class="mb-4">
                     <InputLabel for="email" value="Email Address" />
@@ -101,9 +123,16 @@ const barChartData = {
                 <div class="flex justify-between items-center">
                     <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100">Welcome, {{ user?.name }}</h1>
                     <div class="flex gap-4">
-                        <button @click="showInviteModal = true" class="flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md hover:scale-105 transition-all">
-                            <Plus class="mr-2" /> Invite User
+                        <button
+                            @click="showInviteModal = true"
+                            class="flex items-center px-6 py-3 rounded-lg shadow-md hover:scale-105 transition-all
+        bg-blue-600 dark:bg-blue-500 text-gray-900 dark:text-white"
+                        >
+                            <Plus class="mr-2 text-gray-900 dark:text-white" />
+                            Invite User
                         </button>
+
+
                     </div>
                 </div>
 
@@ -118,19 +147,19 @@ const barChartData = {
 
                 <div class="grid md:grid-cols-3 gap-8">
                     <CustomCard title="🏢 Company Name">
-                        <p class="text-lg font-semibold">{{ profile?.company_name || 'Not available' }}</p>
+                        <p class="text-lg font-semibold">{{ profile?.empresa_nombre || 'Not available' }}</p>
                     </CustomCard>
                     <CustomCard title="🏷️ Company Type">
-                        <p class="text-lg font-semibold">{{ profile?.company_type || 'Not available' }}</p>
+                        <p class="text-lg font-semibold">{{ profile?.empresa_tipo || 'Not available' }}</p>
                     </CustomCard>
                     <CustomCard title="🖥️ Dashboard Name">
                         <p class="text-lg font-semibold">{{ profile?.dashboard_name || 'Not available' }}</p>
                     </CustomCard>
                     <CustomCard title="✅ Onboarding Completed">
-                        <p class="text-lg font-semibold">{{ profile?.onboarding_completed ? 'Yes' : 'No' }}</p>
+                        <p class="text-lg font-semibold">{{ profile?.onboarding_completo ? 'Yes' : 'No' }}</p>
                     </CustomCard>
                     <CustomCard title="📂 Available Modules">
-                        <p class="text-lg font-semibold">{{ profile?.modules || 'Not available' }}</p>
+                        <p class="text-lg font-semibold">{{ profile?.modulos || 'Not available' }}</p>
                     </CustomCard>
                 </div>
 

@@ -165,3 +165,7 @@ const eliminarCaja = async (id) => {
         </div>
     </div>
 </template>
+
+<style>
+
+</style>

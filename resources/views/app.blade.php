@@ -19,7 +19,7 @@
     </head>
 <!--    <body class="font-sans antialiased">-->
 
-    <body :class="{ 'dark': darkMode }" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }">
+    <body>
 
     @inertia
     </body>

@@ -2,230 +2,336 @@
 @tailwind components;
 @tailwind utilities;
 
-
-.bg-gray-100 {
-    --tw-bg-opacity: 1;
-    background-color: white !important;
+/* 🌞 Light Mode (Default) */
+body {
+    --text-primary: #111827 !important; /* Dark text */
+    --text-secondary: #374151 !important; /* Medium-dark text */
 }
 
-.card {
-    cursor: pointer;
-    padding: 16px;
-    border-radius: 8px;
-    border: 2px solid #ddd;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.3s ease;
+/* 🌙 Dark Mode */
+.dark body {
+    --text-primary: #ffffff !important; /* White text */
+    --text-secondary: #d1d5db !important; /* Light gray */
 }
 
-.card:hover {
-    transform: scale(1.05);
-    border-color: #4CAF50; /* Color cuando la tarjeta se pasa el mouse */
+/* 🌟 Apply these variables globally */
+.text-primary {
+    color: var(--text-primary) !important;
 }
 
-.card.selected {
-    border-color: #4CAF50;
-    background-color: #f1f9f3;
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+/* 🖱️ Button styles */
+button {
+    @apply transition-all duration-300;
+}
+
+/* 👇 Make sure buttons inherit text color dynamically */
+button,
+button span,
+button i,
+button svg {
+    color: var(--text-primary) !important;
 }
 
 
-.card .font-bold {
-    font-size: 1.25rem;
-    margin-top: 8px;
+
+/* === 🏆 GENERAL TABLE STYLES === */
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* === 🎨 LIGHT MODE TABLE === */
+table {
+    background-color: #f6f6f6 !important; /* Soft gray background */
+    color: #333 !important;
+    border: 1px solid #ddd !important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+thead {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+}
+
+tbody tr {
+    background-color: #ffffff !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9 !important; /* Alternating row color */
+}
+
+tbody tr:hover {
+    background-color: #eaeaea !important;
+}
+
+/* === 🖤 DARK MODE TABLE === */
+.dark table {
+    background-color: #1a1a1a !important;
+    color: #e4e4e7 !important;
+    border: 1px solid #3a3a3a !important;
+    box-shadow: 0px 4px 6px rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark thead {
+    background-color: #242424 !important;
+    color: #ffffff !important;
+}
+
+.dark tbody tr {
+    background-color: #1e1e1e !important;
+}
+
+.dark tbody tr:nth-child(even) {
+    background-color: #242424 !important;
+}
+
+.dark tbody tr:hover {
+    background-color: #30334c !important;
+}
+
+/* === 📌 TABLE BORDERS & CELLS === */
+th, td {
+    padding: 12px !important;
+    text-align: left !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* === 🔘 TABLE ACTION BUTTONS === */
+button {
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    font-weight: bold !important;
+    background-color: var(--button-bg) !important;
+    color: var(--button-text) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+button:hover {
+    transform: scale(1.05) !important;
+    background-color: var(--hover-color) !important;
 }
 
 
 
 
+/* 🔥 RESET Y TRANSICIONES 🔥 */
 a {
-    text-decoration: none !important;
-    color: var(--second-color);
-}
-
-.custom-inset {
-    top: 8%;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-* {
-    font-family: "Karla", sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    text-decoration: unset !important;
 }
 
 body {
-    --main-color: #ffffff;
-    --second-color: #333333;
-    --third-color: #444444;
-    --fourth-color: #f7f7f7;
-    --fifth-color: #f0f0f0;
-    --blue-color: #0973FD;
-    background-color: var(--main-color);
-    color: var(--second-color);
+    @apply transition-colors duration-300 ease-in-out;
 }
 
-.dark {
-    --main-color: #191919;
-    --second-color: #D1D1D1;
-    --third-color: #ffffff;
-    background-color: var(--main-color);
-    color: var(--second-color);
+/* === 🎨 MODO CLARO === */
+body {
+    --bg-color: #ffffff !important;
+    --text-color: #333333 !important;
+    --card-bg: #f9f9f9 !important;
+    --border-color: #dddddd !important;
+    --navbar-bg: #ffffff !important;
+    --sidebar-bg: #f8f8f8 !important;
+    --button-bg: #f0f0f0 !important;
+    --button-text: #333 !important;
+    --hover-color: rgba(0, 0, 0, 0.1) !important;
+    --input-bg: #f7f7f7 !important;
 }
 
-h1, h2, h3, h4, h5, p, i, a, span {
-    cursor: pointer;
-    transition: all 0.3s ease;
+/* === 🖤 MODO OSCURO (Inspirado en Notion) === */
+.dark body {
+    --bg-color: #1a1a1a !important;
+    --text-color: #e4e4e7 !important;
+    --card-bg: #242424 !important;
+    --border-color: #3a3a3a !important;
+    --navbar-bg: #1e1e1e !important;
+    --sidebar-bg: #1b1b1b !important;
+    --button-bg: #333333 !important;
+    --button-text: #ffffff !important;
+    --hover-color: rgba(255, 255, 255, 0.1) !important;
+    --input-bg: #2b2b2b !important;
 }
 
-.line {
-    border-bottom: 1px solid var(--fifth-color);
+/* === 🏠 BACKGROUND GENERAL === */
+body {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color) !important;
 }
 
-h1 {
-    margin-top: 5%;
-    font-size: 2rem;
-    font-weight: 600;
-}
-
-.me {
-    display: inline-block;
-}
-
-.input input, .input textarea {
-    border-radius: 8px;
-    padding: 12px;
-    margin: 10px 0;
-    background-color: var(--fifth-color);
-    border: 1px solid #ddd;
-    transition: border 0.3s ease;
-}
-
-.input input:focus, .input textarea:focus {
-    border-color: var(--blue-color);
-    outline: none;
-}
-
-.send {
-    float: right;
-    padding-bottom: 5%;
-}
-
-.a_item {
-    color: #999999;
-}
-
-.a_item:hover {
-    color: var(--blue-color);
-}
-
-.card {
-    border-radius: 10px;
-    background-color: var(--fifth-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 10px;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    max-width: 100%;
-    width: 300px;
-    font-size: 16px;
-}
-
-.card:hover {
-    background-color: var(--fourth-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.card img {
-    width: 100%;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.card p {
-    color: var(--third-color);
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.card span {
-    color: var(--blue-color);
-}
-
+/* === 📌 NAVBAR === */
 .nav {
-    background-color: var(--main-color);
+    background-color: var(--navbar-bg) !important;
     width: 100%;
     position: sticky;
     top: 0;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.menu {
-    background: var(--main-color);
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 0;
-    max-width: 200px;
-    z-index: 1;
-    color: var(--fifth-color);
-    overflow-x: hidden;
-    padding-top: 10px;
-    transition: 0.5s;
-}
-
-.menu a {
-    padding: 15px;
-    font-size: 18px;
-    display: block;
-    color: var(--second-color);
-    transition: background-color 0.3s ease;
-}
-
-.menu a:hover {
-    background-color: #f0f0f0;
-}
-
-.section {
+    padding: 15px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
     display: flex;
     justify-content: space-between;
-    width: 100%;
-    padding: 40px 10%;
+    align-items: center;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.dark .nav {
+    background-color: var(--navbar-bg) !important;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05) !important;
+}
+
+/* === 📂 SIDEBAR === */
+.sidebar {
+    background-color: var(--sidebar-bg) !important;
+    color: var(--text-color) !important;
+    width: 250px !important;
+    min-height: 100vh !important;
+    padding: 20px !important;
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.sidebar a {
+    color: var(--text-color) !important;
+    padding: 12px !important;
+    display: block !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.sidebar a:hover {
+    background-color: var(--hover-color) !important;
+    border-radius: 8px !important;
+}
+
+/* === 🎴 TARJETAS (CARDS) === */
+.card {
+    padding: 16px !important;
+    border-radius: 12px !important;
+    border: 2px solid var(--border-color) !important;
+    background-color: var(--card-bg) !important;
+    transition: all 0.3s ease-in-out !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+    width: 100% !important;
+    max-width: 350px !important;
+}
+
+.dark .card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    box-shadow: 0 4px 10px rgba(255, 255, 255, 0.05) !important;
+}
+
+.card:hover {
+    transform: translateY(-5px) scale(1.05) !important;
+    border-color: var(--button-bg) !important;
+}
+
+/* === 🔘 BOTONES === */
+/*button {*/
+/*    padding: 10px 16px !important;*/
+/*    border-radius: 8px !important;*/
+/*    font-weight: bold !important;*/
+/*    background-color: var(--button-bg) !important;*/
+/*    color: var(--button-text) !important;*/
+/*    border: 1px solid var(--border-color) !important;*/
+/*    transition: all 0.3s ease-in-out !important;*/
+/*}*/
+
+/*button:hover {*/
+/*    transform: scale(1.05) !important;*/
+/*    background-color: var(--hover-color) !important;*/
+/*}*/
+
+/* === 📝 INPUTS === */
+.input input,
+.input textarea {
+    border-radius: 8px !important;
+    padding: 12px !important;
+    margin: 10px 0 !important;
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    width: 100% !important;
+    color: var(--text-color) !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.input input:focus,
+.input textarea:focus {
+    border-color: var(--button-bg) !important;
+    outline: none !important;
+    box-shadow: 0 0 8px rgba(74, 144, 226, 0.5) !important;
+}
+
+.dark .input input,
+.dark .input textarea {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* === 🖼️ SECCIONES === */
+.section {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    padding: 40px 10% !important;
 }
 
 .section img {
-    width: 40%;
-    border-radius: 8px;
+    width: 100% !important;
+    max-width: 400px !important;
+    border-radius: 8px !important;
 }
 
-.textl, .textr {
-    text-align: center;
-    padding: 10px;
+/* === ✍ TEXTO === */
+h1, h2, h3, h4, h5, p, span {
+    color: var(--text-color) !important;
+}
+
+/* === 📲 RESPONSIVE DESIGN === */
+@media (max-width: 1024px) {
+    .section {
+        padding: 20px !important;
+    }
+
+    .card {
+        width: 90% !important;
+        max-width: 300px !important;
+    }
+
+    .nav {
+        padding: 12px !important;
+    }
 }
 
 @media (max-width: 768px) {
     .section {
-        flex-direction: column;
-        padding: 20px;
+        flex-direction: column !important;
+        padding: 20px !important;
     }
 
     .section img {
-        width: 80%;
+        width: 80% !important;
     }
 
     .card {
-        width: 100%;
+        width: 100% !important;
+    }
+
+    .sidebar {
+        width: 100% !important;
+        max-width: 200px !important;
     }
 }
 
 @media (max-width: 480px) {
     .card {
-        width: 100%;
-        padding: 15px;
+        width: 100% !important;
+        padding: 15px !important;
     }
 }

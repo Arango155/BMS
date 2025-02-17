@@ -27,17 +27,23 @@ import StarterKit from '@tiptap/starter-kit';
 import { MotionPlugin } from '@vueuse/motion';
 import FloatingVue from 'floating-vue';
 import { Dialog, DialogOverlay, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/vue';
-import { useDark } from '@vueuse/core';
+import { useDark, useToggle } from '@vueuse/core';
 
 // 📌 Importar router desde `router/index.js`
 import router from './router';
 
 const appName = import.meta.env.VITE_APP_NAME || 'BMS';
 
-// 🔥 Detecta el modo oscuro antes de cargar la app
-const isDark = useDark();
-if (isDark.value) document.documentElement.classList.add('dark');
-else document.documentElement.classList.remove('dark');
+// 🔥 MEJOR LÓGICA DE MODO OSCURO
+const isDark = useDark({
+    selector: 'html',
+    attribute: 'class',
+    valueDark: 'dark',
+    valueLight: 'light',
+    storageKey: 'darkModePreference', // Guarda la preferencia en LocalStorage
+});
+
+const toggleDarkMode = useToggle(isDark);
 
 // 🚀 Crear la aplicación Inertia con Vue Router
 createInertiaApp({
