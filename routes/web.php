@@ -17,6 +17,7 @@ use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\InventoryProductController;
 
 
 Route::get('/test-layout', function () {
@@ -131,6 +132,15 @@ Route::get('/inventario/Compras', function () {
 // 📌 Rutas para Caja utilizando `CajaController`
 Route::middleware(['auth', 'verified'])->group(function () {
 
+    Route::prefix('inventory-products')->group(function () {
+        Route::get('/list', [InventoryProductController::class, 'index']); // 📋 List all products
+        Route::post('/store', [InventoryProductController::class, 'store']); // 🔥 Ruta correcta para agregar productos
+        Route::get('/{id}', [InventoryProductController::class, 'show']); // 🔍 Get a product
+        Route::put('/{id}/update', [InventoryProductController::class, 'update']); // ✏️ Update product
+        Route::delete('/{id}/delete', [InventoryProductController::class, 'destroy']); // 🗑️ Delete product
+        Route::get('/best-sellers', [InventoryProductController::class, 'bestSellers']); // 🔥 Best Sellers
+        Route::get('/in-warehouse', [InventoryProductController::class, 'inWarehouse']); // 🏢 In Warehouse
+    });
 
     Route::prefix('clientes')->group(function () {
         Route::get('/list', [ClienteController::class, 'index']);

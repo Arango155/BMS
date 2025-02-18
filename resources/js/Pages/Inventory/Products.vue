@@ -62,29 +62,37 @@ const resetForm = () => {
         warranty_time: '',
     };
 };
-
-// ✅ Save Product
 const saveProduct = async () => {
-    if (!form.value.name || !form.value.stock || !form.value.sale_price) {
-        toast.error('❌ Name, stock, and sale price are required.');
+    if (!form.value.code || !form.value.name || !form.value.stock || !form.value.min_stock || !form.value.sale_price) {
+        toast.error('❌ Code, name, stock, min stock, and sale price are required.');
         return;
     }
 
     try {
-        if (form.value.id) {
-            await axios.put(`/products/${form.value.id}/update`, form.value);
-            toast.success('✅ Product updated successfully.');
-        } else {
-            await axios.post('/products/store', form.value);
-            toast.success('✅ Product added successfully.');
-        }
+        const productData = {
+            code: form.value.code,
+            name: form.value.name,
+            stock: parseInt(form.value.stock),
+            min_stock: parseInt(form.value.min_stock),
+            sale_price: parseFloat(form.value.sale_price),
+        };
+
+        console.log("Sending Product Data:", productData); // 🔍 Verifica en la consola
+
+        await axios.post('/inventory-products/store', productData, {
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        toast.success('✅ Product added successfully.');
         loadProducts();
         view.value = 'list';
         resetForm();
     } catch (error) {
+        console.error("❌ Error saving product:", error.response?.data);
         toast.error('❌ Error saving product.');
     }
 };
+
 
 onMounted(loadProducts);
 
@@ -106,7 +114,7 @@ onMounted(loadProducts);
             <button @click="view = 'warehouse'" class="px-5 py-3 rounded-lg shadow-md">🏢 In Warehouse</button>
             <button @click="view = 'bestsellers'" class="px-5 py-3 rounded-lg shadow-md">🔥 Best Sellers</button>
             <button @click="view = 'by_category'" class="px-5 py-3 rounded-lg shadow-md">📂 By Category</button>
-     
+
         </div>
 
 
