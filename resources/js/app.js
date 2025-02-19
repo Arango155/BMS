@@ -29,6 +29,9 @@ import FloatingVue from 'floating-vue';
 import { Dialog, DialogOverlay, DialogPanel, DialogTitle, DialogDescription } from '@headlessui/vue';
 import { useDark, useToggle } from '@vueuse/core';
 
+import NasaTable from '@/Components/NasaDataComponent.vue';
+
+
 // 📌 Importar router desde `router/index.js`
 import router from './router';
 
@@ -64,6 +67,7 @@ createInertiaApp({
             })
             .use(MotionPlugin)
             .use(FloatingVue)
+            .component('NasaTable', NasaTable)
             .component('Footer', Footer)
             .component('DarkModeToggle', DarkModeToggle)
             .component('PlusIcon', Plus)

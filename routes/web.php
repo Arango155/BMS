@@ -18,6 +18,15 @@ use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\InventoryProductController;
+use App\Http\Controllers\NasaApiController;
+
+Route::get('/nasa-data', [NasaApiController::class, 'getNasaData']);
+
+
+// Página de visualización en la SPA
+Route::get('/nasa', function () {
+    return Inertia::render('NasaView'); // Asegúrate de crear este componente en Vue
+});
 
 
 Route::get('/test-layout', function () {

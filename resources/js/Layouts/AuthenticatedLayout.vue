@@ -52,7 +52,11 @@ const toggleSection = (section) => {
                 <router-link to="/dashboard" class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                     <Home class="w-5 h-5" /> Dashboard
                 </router-link>
+                <router-link to="/nasa" class="flex items-center gap-3 p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    🚀 NASA Data
+                </router-link>
 
+                <router-link to="/api">API</router-link>
                 <!-- User Management -->
                 <div @click="toggleSection('users')" class="flex justify-between items-center cursor-pointer p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                     <div class="flex items-center gap-3">

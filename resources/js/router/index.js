@@ -47,6 +47,11 @@ import Taxes from '@/Pages/Accounting/Taxes.vue';
 import Contracts from '@/Pages/Legal/Contracts.vue';
 import Compliance from '@/Pages/Legal/Compliance.vue';
 
+import Api from '@/Components/NasaDataComponent.vue';
+import NasaView from '@/Pages/NasaView.vue';
+
+
+
 // 📌 Import pages for Settings
 // import Settings from '@/Pages/Settings.vue';
 
@@ -56,6 +61,17 @@ const routes = [
         redirect: '/dashboard', // Automatically redirects to the dashboard
     },
     {
+        path: '/api',
+        name: 'api',
+        component: Api, // Loads only the Dashboard component
+    },
+    {
+        path: '/nasa',
+        name: 'nasa',
+        component: NasaView,
+    },
+
+{
         path: '/dashboard',
         name: 'dashboard',
         component: Dashboard, // Loads only the Dashboard component
