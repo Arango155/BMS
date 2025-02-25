@@ -2,39 +2,36 @@
 import { Head, usePage, router } from '@inertiajs/vue3';
 import { ref, watch, onMounted } from 'vue';
 
-// 📌 Reactive state for users and loading state
+// 📌 Estado reactivo para usuarios y carga
 const users = ref([]);
-const isLoading = ref(true); // 🔄 State to show "Loading..."
+const isLoading = ref(true);
 
+// 📌 Cargar usuarios
 const fetchUsers = async () => {
-    isLoading.value = true; // 🔄 Activate loading state
-    console.log("🔍 Initial `usePage().props.users`:", usePage().props.users);
+    isLoading.value = true;
 
     if (usePage().props.users && usePage().props.users.length > 0) {
         users.value = usePage().props.users;
-        console.log("✅ Users retrieved from `usePage().props`:", users.value);
     } else {
-        console.log("⚠️ `usePage().props.users` is empty. Fetching from API...");
         try {
             const response = await fetch('/api/users');
             const data = await response.json();
             users.value = data.users;
-            console.log("✅ Users retrieved from API:", users.value);
         } catch (error) {
             console.error("⚠️ Error fetching users:", error);
         }
     }
 
-    isLoading.value = false; // ✅ Disable loading state
+    isLoading.value = false;
 };
 
-// 📌 Fetch users when the component is mounted
+// 📌 Ejecutar al montar
 onMounted(fetchUsers);
 
-// 📌 Watch for changes in `usePage().props` and reload if necessary
+// 📌 Vigilar cambios en `usePage().props.users`
 watch(() => usePage().props.users, fetchUsers);
 
-// 📌 Delete user without reloading the page
+// 📌 Eliminar usuario sin recargar la página
 const deleteUser = async (id) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
 
@@ -47,8 +44,7 @@ const deleteUser = async (id) => {
             },
         });
 
-        console.log(`✅ User with ID ${id} deleted.`);
-        fetchUsers(); // 🔄 Reload users after deletion
+        fetchUsers(); // 🔄 Recargar usuarios después de eliminar
     } catch (error) {
         console.error("⚠️ Error deleting user:", error);
     }
@@ -60,42 +56,48 @@ const deleteUser = async (id) => {
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
+            <div class="dark:bg-gray-800 overflow-hidden shadow-md sm:rounded-lg p-6">
+
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">User Management</h2>
 
-                <!-- 📌 Show loading message -->
+                <!-- 📌 Mostrar "Cargando..." -->
                 <p v-if="isLoading" class="text-center text-gray-500 dark:text-gray-300 my-4 animate-pulse">
                     🔄 Loading users...
                 </p>
 
-                <!-- 📌 Message if no users are registered -->
+                <!-- 📌 Mensaje si no hay usuarios -->
                 <p v-else-if="users.length === 0" class="text-center text-gray-500 dark:text-gray-300 my-4">
                     No users registered.
                 </p>
 
-                <!-- 📌 Users table -->
-                <table v-else class="min-w-full border-collapse mt-4">
-                    <thead>
-                    <tr class="bg-gray-200 dark:bg-gray-700">
-                        <th class="border px-4 py-2">ID</th>
-                        <th class="border px-4 py-2">Name</th>
-                        <th class="border px-4 py-2">Email</th>
-                        <th class="border px-4 py-2">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="user in users" :key="user.id" class="border-b">
-                        <td class="border px-4 py-2">{{ user.id }}</td>
-                        <td class="border px-4 py-2">{{ user.name }}</td>
-                        <td class="border px-4 py-2">{{ user.email }}</td>
-                        <td class="border px-4 py-2">
-                            <button @click="deleteUser(user.id)" class="bg-red-500 text-white px-2 py-1 rounded">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <!-- 📌 Tabla de Usuarios -->
+                <div v-else class="overflow-x-auto mt-4">
+                    <table class="min-w-full border border-gray-300 dark:border-gray-700 shadow-lg rounded-lg overflow-hidden">
+                        <thead>
+                        <tr class="bg-gray-300 dark:bg-gray-900 text-gray-900 dark:text-gray-100 uppercase text-sm">
+                            <th class="border border-gray-400 dark:border-gray-700 px-6 py-3 text-left">ID</th>
+                            <th class="border border-gray-400 dark:border-gray-700 px-6 py-3 text-left">Name</th>
+                            <th class="border border-gray-400 dark:border-gray-700 px-6 py-3 text-left">Email</th>
+                            <th class="border border-gray-400 dark:border-gray-700 px-6 py-3 text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="user in users" :key="user.id"
+                            class="border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                            <td class="border border-gray-300 dark:border-gray-700 px-6 py-4">{{ user.id }}</td>
+                            <td class="border border-gray-300 dark:border-gray-700 px-6 py-4">{{ user.name }}</td>
+                            <td class="border border-gray-300 dark:border-gray-700 px-6 py-4">{{ user.email }}</td>
+                            <td class="border border-gray-300 dark:border-gray-700 px-6 py-4 text-center">
+                                <button @click="deleteUser(user.id)"
+                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-md shadow-md transition">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
         </div>
     </div>

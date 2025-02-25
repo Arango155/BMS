@@ -17,6 +17,7 @@ import { Doughnut, Bar } from 'vue-chartjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import VueCal from 'vue-cal';
 import 'vue-cal/dist/vuecal.css';
+import {useDarkMode} from "@/utils/theme.js";
 
 // Register Chart.js elements
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
@@ -27,25 +28,10 @@ const profile = computed(() => page.props.profile);
 const showInviteModal = ref(false);
 const toast = useToast();
 
-// ✅ Modo oscuro con persistencia
-const isDarkMode = useDark({
-    selector: 'html',
-    attribute: 'class',
-    valueDark: 'dark',
-    valueLight: 'light',
-    storageKey: 'darkModePreference',
-});
+const { isDarkMode, toggleDarkMode } = useDarkMode();
 
 
 
-// ✅ Asegurar que el tema se aplique correctamente sin forzar
-onMounted(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode.value);
-});
-
-watchEffect(() => {
-    document.documentElement.classList.toggle('dark', isDarkMode.value);
-});
 
 const form = useForm({
     email: '',

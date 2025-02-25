@@ -3,10 +3,17 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useToast } from 'vue-toastification';
+import {useDarkMode} from "@/utils/theme.js";
 
 const toast = useToast();
 const vistaActual = ref('lista');
 const clientes = ref([]);
+
+
+const { isDarkMode, toggleDarkMode } = useDarkMode();
+
+
+// ✅ Formulario de cliente
 const form = ref({
     id: null,
     tipo_documento: 'DNI',
@@ -32,7 +39,7 @@ const cargarClientes = async () => {
 
 onMounted(cargarClientes);
 
-// ✅ Agregar o actualizar un cliente
+// ✅ Guardar cliente
 const guardarCliente = async () => {
     try {
         if (form.value.id) {
@@ -72,7 +79,7 @@ const editarCliente = (cliente) => {
     vistaActual.value = 'editar';
 };
 
-// ✅ Mostrar formulario para nuevo cliente
+// ✅ Nuevo Cliente
 const nuevoCliente = () => {
     resetForm();
     vistaActual.value = 'nueva';
@@ -98,25 +105,31 @@ const eliminarCliente = async (id) => {
 </script>
 
 <template>
-    <div class="p-6 bg-gray-100 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-center mb-6">👥 Gestión de Clientes</h2>
+    <div class="p-6 bg-gray-100 dark:bg-gray-900 rounded-xl shadow-lg text-gray-900 dark:text-white">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">👥 Gestión de Clientes</h2>
+            <button @click="toggleDarkMode"
+                    class="p-2 rounded-full bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 transition">
+                {{ isDarkMode ? '🌞' : '🌙' }}
+            </button>
+        </div>
 
         <div class="flex justify-center gap-4 mb-8">
             <button @click="vistaActual = 'lista'"
-                    class="px-5 py-3 rounded-lg shadow-md"
-                    :class="vistaActual === 'lista' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'">
+                    class="px-5 py-3 rounded-lg shadow-md transition"
+                    :class="vistaActual === 'lista' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white'">
                 📋 Lista de Clientes
             </button>
             <button @click="nuevoCliente"
-                    class="px-5 py-3 rounded-lg shadow-md"
-                    :class="vistaActual === 'nueva' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white'">
+                    class="px-5 py-3 rounded-lg shadow-md transition"
+                    :class="vistaActual === 'nueva' ? 'bg-blue-600 text-white' : 'bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white'">
                 ➕ Nuevo Cliente
             </button>
         </div>
 
         <!-- LISTA DE CLIENTES -->
         <div v-if="vistaActual === 'lista'">
-            <table class="w-full bg-white rounded-lg shadow-md">
+            <table class="w-full bg-white dark:bg-gray-800 rounded-lg shadow-md">
                 <thead>
                 <tr class="bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-white">
                     <th class="py-3 px-5 text-left">#</th>
@@ -147,25 +160,19 @@ const eliminarCliente = async (id) => {
             </table>
         </div>
 
-        <!-- FORMULARIO PARA AGREGAR / EDITAR CLIENTE -->
-        <div v-if="vistaActual === 'nueva' || vistaActual === 'editar'" class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md">
+        <!-- FORMULARIO -->
+        <div v-if="vistaActual === 'nueva' || vistaActual === 'editar'" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
                 {{ form.id ? '✏️ Editar Cliente' : '➕ Nuevo Cliente' }}
             </h3>
             <form @submit.prevent="guardarCliente" class="space-y-4">
-                <select v-model="form.tipo_documento" class="w-full p-3 border rounded-md">
+                <select v-model="form.tipo_documento" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white">
                     <option value="DNI">DNI</option>
                     <option value="RUC">RUC</option>
                     <option value="Pasaporte">Pasaporte</option>
                 </select>
-                <input v-model="form.documento" type="text" placeholder="📜 Número de Documento" class="w-full p-3 border rounded-md">
-                <input v-model="form.nombres" type="text" placeholder="👤 Nombres" class="w-full p-3 border rounded-md">
-                <input v-model="form.apellidos" type="text" placeholder="👤 Apellidos" class="w-full p-3 border rounded-md">
-                <input v-model="form.estado_residencia" type="text" placeholder="📍 Estado de Residencia" class="w-full p-3 border rounded-md">
-                <input v-model="form.ciudad" type="text" placeholder="🏙️ Ciudad" class="w-full p-3 border rounded-md">
-                <input v-model="form.direccion" type="text" placeholder="📍 Dirección" class="w-full p-3 border rounded-md">
-                <input v-model="form.telefono" type="text" placeholder="📞 Teléfono" class="w-full p-3 border rounded-md">
-                <input v-model="form.email" type="email" placeholder="📧 Email" class="w-full p-3 border rounded-md">
+                <input v-model="form.documento" type="text" placeholder="📜 Número de Documento" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white">
+                <input v-model="form.nombres" type="text" placeholder="👤 Nombres" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white">
                 <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md">
                     {{ form.id ? 'Guardar Cambios' : 'Guardar' }}
                 </button>
